@@ -1,0 +1,42 @@
+<div ng-controller="showCtrl">
+	<!-- <div ><label id="pendinglabel">{{employee.Name}}--{{employee.EmpId}}</label><button>Approve</button>
+	</div> -->
+
+
+
+	<table class="css-table">
+		<tr class="css-table-row">
+			<th class="css-table-cell"><label class="css-tableheader"></label>
+			</th>
+			<th class="css-table-cell"><label class="css-tableheader">Name</label>
+			</th>
+			<th class="css-table-cell"><label class="css-tableheader">Employee
+					Id</label></th>
+			<th class="css-table-cell"><label class="css-tableheader">Manager
+					Email</label></th>
+			<th class="css-table-cell"><label class="css-tableheader">Employee
+					Email</label></th>
+			<th class="css-table-cell"><label class="css-tableheader">status</label>
+			</th>
+			<th class="css-table-cell"><label class="css-tableheader">comment</label>
+			</th>
+		</tr>
+		<tr class="fade" ng-repeat="employee in employeesList"
+			ng-if="employee.ReqStatus == 0">
+			<td class="css-table-cell"><input type="checkbox"></td>
+
+			<td class="css-table-cell">{{employee.Name}}</td>
+			<td class="css-table-cell">{{employee.EmpId}}</td>
+			<td class="css-table-cell">{{employee.ManagerEmail}}</td>
+			<td class="css-table-cell">{{employee.EmpEmail}}</td>
+			<td class="css-table-cell">{{employee.status}}</td>
+			<td class="css-table-cell">{{employee.comment}}</td>
+			
+
+		</tr>
+	</table>
+<div align="center"><button>Approve</button><button>Decline</button></div>
+
+
+
+</div>

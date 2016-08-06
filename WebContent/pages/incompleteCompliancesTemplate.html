@@ -1,0 +1,38 @@
+<ol >
+	<table class="csstable">
+		<tr class="css-tableAdmin">
+
+			<th class="css-table-cellAdmin"><label>Name</label></th>
+			<th class="css-table-cellAdmin"><label>Employee Id</label></th>
+			<th class="css-table-cellAdmin"><label>Employee
+					Email</label></th>
+			<th class="css-table-cellAdmin"><label>Manager
+					Email</label></th>
+					<th class="css-table-cellAdmin"><label>Due Date</label></th>
+		</tr>
+	</table>
+	<li ng-repeat="employee in employeesList"
+		ng-if="employee.ReqStatus == 1"><div ng-controller="showCtrl">
+			<div style="padding:5px">
+			<br>
+				<div ng-click="ShowHide()" class="content">
+					<div style="color: blue;">{{employee.Name}}</div>
+					<div>{{employee.EmpId}}</div>
+					<div>{{employee.EmpEmail}}</div>
+					<div>{{employee.ManagerEmail}}</div>
+					<div>{{FromDate|date:'yyyy-MM-dd'}}</div>
+				</div>
+				<br>
+				<div ng-hide="IsHidden" style="background-color: white;">
+					<p>please check employee compliances</p>
+					<input type="checkbox" ng-model="employee.exam1">Test1 <input
+						type="checkbox" ng-model="employee.exam2">Test2 <input
+						type="checkbox" ng-model="employee.exam3">Test3 <input
+						type="checkbox" ng-model="employee.exam4">Policy1 <input
+						type="checkbox" ng-model="employee.exam5">Policy2
+					<textarea ng-model="employee.comment"></textarea>
+					<button ng-click="ShowHide()" ng-hide="IsHidden">submit</button>
+				</div>
+			</div>
+		</div></li>
+</ol>

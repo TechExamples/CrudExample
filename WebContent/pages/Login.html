@@ -1,0 +1,24 @@
+<div ng_controller="LoginCtrl" class="lg-container">
+		<h1>Admin</h1>
+		<form name="lg-form" id="lg-form">
+
+			<div>
+				<label>Username</label> <input type="text" id="username"
+					ng-model="username" placeholder="Enter Username"> <span
+					ng_show="">Username required</span>
+			</div>
+			<div>
+				<label>Password</label> <input type="password" id="password"
+					ng-model="password" placeholder="Enter Password"> <span
+					ng_show="lg-form.username.$dirty&&lg-form.username.$error.required">Password
+					required</span>
+			</div>
+			<div align = "center">
+				<button type="submit"  ng-click=validate(username,password) 
+					id="login">Login</button>
+			</div>
+
+
+		</form>
+		<div id="message"> {{message}}</div>
+	</div>

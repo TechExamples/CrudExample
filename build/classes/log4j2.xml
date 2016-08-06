@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" name="odcAccess">
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+        <PatternLayout pattern="current date-%d LEVEL-%-5p  Thread-[%t]  Method-%M()   Class name-%C   Message-%m%n"/>
+    </Console>
+    
+    <RollingFile name="RollingFile" fileName="C:/Users/rnel1941/workspace/logs/odcAccess.log" filePattern="C:/Users/rnel1941/workspace/logs/odcAccess-%d{MM-dd-yyyy}.log.gz">
+      <PatternLayout>
+        <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+      </PatternLayout>
+      <TimeBasedTriggeringPolicy />
+    </RollingFile>
+    
+  </Appenders>
+  
+   <Loggers>
+    
+    <Logger name="org.springframework" level="trace" additivity="false">
+      <AppenderRef ref="STDOUT" level="info"/>
+      <AppenderRef ref="RollingFile" level="trace"/>
+    </Logger>
+    
+    <Logger name="org.hibernate" level="trace" additivity="false">
+      <AppenderRef ref="STDOUT" level="info"/>
+      <AppenderRef ref="RollingFile" level="trace"/>
+    </Logger>
+    
+    <Logger name="org.hibernate.SQL" level="trace" additivity="false">
+      <AppenderRef ref="STDOUT" level="info"/>
+      <AppenderRef ref="RollingFile" level="trace"/>
+    </Logger>
+    
+    <Logger name="com.dataBytes" level="trace" additivity="false">
+      <AppenderRef ref="STDOUT" level="info"/>    
+      <AppenderRef ref="RollingFile" level="trace"/>
+    </Logger>
+    
+    <Root level="info" additivity="false">
+      <AppenderRef ref="STDOUT" level="error"/>    
+      <AppenderRef ref="RollingFile" level="info"/>
+    </Root>
+    
+  </Loggers>
+</Configuration>

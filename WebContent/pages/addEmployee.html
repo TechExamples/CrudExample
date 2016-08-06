@@ -1,0 +1,64 @@
+<form name="empForm" id="emp-form" >
+	<div>
+		<label>Employee Id</label><input type="number" name="empId"
+			ng-model="employee.empId" required>
+			<span ng-show="empForm.empId.$dirty&&empForm.empId.$error.required">*</span>
+			<span ng-show="empForm.empName.$dirty&&empForm.empName.$error.text">enter employee id!</span>
+	</div>
+	<div>
+		<label>Employee Name</label> <input type="text" name="empName"
+			ng-model="employee.empName" required>
+			<span ng-show="empForm.empName.$dirty&&empForm.empName.$error.required">*</span>
+			<span ng-show="empForm.empName.$dirty&&empForm.empName.$error.text">enter employee Name!</span>
+			
+	</div>
+	<div>
+		<label>App Area</label> <input type="text" name="appArea"
+			ng-model="employee.appArea">
+			<span ng-show="empForm.appArea.$dirty&&empForm.appArea.$error.required">*</span>
+			<span ng-show="empForm.empName.$dirty&&empForm.empName.$error.text">enter app area!</span>
+	</div>
+	<div>
+		<label>DSID</label> <input type="text" name="dsid"
+			ng-model="employee.dsid">
+			<span ng-show="empForm.dsid.$dirty&&empForm.dsid.$error.required">*</span>
+			<span ng-show="empForm.empName.$dirty&&empForm.empName.$error.text">enter DSID!</span>
+	</div>
+	<div>
+		<label>PO / Badge End Date</label> <input type="date"
+			name="pobadgeEndDate" ng-model="employee.pobadgeEndDate">
+			<span ng-show="empForm.pobadgeEndDate.$dirty&&empForm.pobadgeEndDate.$error.required">*</span>
+			<span ng-show="empForm.pobadgeEndDate.$dirty&&empForm.pobadgeEndDate.$error.date">enter date format!</span>
+	</div>
+	<div>
+		<label>Email</label> <input type="email" name="email"
+			ng-model="employee.email" required>
+			<span ng-show="empForm.email.$dirty&&empForm.email.$error.required">*</span>
+			<span ng-show="empForm.email.$dirty&&empForm.email.$error.email">enter proper email!</span>
+	</div>
+
+	<div>
+		<label>Cubicle Id</label> <input type="text" name="cubicleId"
+			ng-model="employee.cubicleId">
+			<span ng-show="empForm.cubicleId.$dirty&&empForm.cubicleId.$error.required">*</span>
+			<span ng-show="empForm.cubicleId.$dirty&&empForm.cubicleId.$error.test">enter cubicle id!</span>
+	</div>
+	<div>
+		<label>Infy Manager Id</label> <input type="number" name="infyManagerId"
+			ng-model="employee.infyManagerId">
+			<span ng-show="empForm.infyManagerId.$dirty&&empForm.infyManagerId.$error.required">*</span>
+			<span ng-show="empForm.infyManagerId.$dirty&&empForm.infyManagerId.$error.number">enter manager id!</span>
+	</div>
+	<div>
+		<label>Type Of Request</label> <input type="text" name="typeOfRequest"
+			ng-model="employee.typeOfRequest">
+			<span ng-show="empForm.typeOfRequest.$dirty&&empForm.typeOfRequest.$error.required">*</span>
+			<span ng-show="empForm.infyManagerId.$dirty&&empForm.infyManagerId.$error.number">enter type of request!</span>
+	</div>
+
+
+	<div align="center">
+		<button ng-disabled="empForm.$invalid" ng-click="addEmployee()">Submit</button>
+		<button type="reset" ng-click="cancelForm()">Cancel</button>
+	</div>
+</form>

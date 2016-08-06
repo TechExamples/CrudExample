@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+
+	<context:component-scan
+		base-package="com.dataBytes.controller, com.dataBytes.service, com.dataBytes.dao, com.dataBytes.dto, com.dataBytes.mail" />
+	
+	<bean id="appplicationProperties"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+		<list>
+			<value>classpath:${spring.profiles.active}-crudExample.properties</value>
+		</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+	</bean>
+
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	
+        
+
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${db.driverClassName}" />
+		<property name="url" value="${db.url}" />
+		<property name="username" value="${db.username}" />
+		<property name="password" value="${db.password}" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<list>
+				<value>com.dataBytes.dto</value>
+			</list>
+		</property>
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<!--  
+				<prop key="hibernate.current_session_context_class">${hibernate.current_session_context_class}</prop>
+				<prop key="hibernate.connection.release_mode">${hibernate.connection.release_mode:auto}</prop>				
+				-->
+				<prop key="hibernate.show_sql">${hibernate.show_sql:false}</prop>
+				<prop key="hibernate.format_sql">${hibernate.format_sql:false}</prop>
+				<prop key="hibernate.use_sql_comments">${hibernate.use_sql_comments:false}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto:none}</prop>
+				<prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache:false}</prop>
+				<prop key="hibernate.cache.provider_class">${hibernate.cache.provider_class:org.hibernate.cache.NoCacheProvider}
+				</prop>
+				<prop key="hibernate.cache.use_second_level_cache">${hibernate.cache.use_second_level_cache:false}
+				</prop>
+				<prop key="hibernate.cache.use_structured_entries">${hibernate.cache.use_structured_entries:false}
+				</prop>
+				<prop key="hibernate.jdbc.fetch_size">${hibernate.jdbc.fetch_size:10}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<tx:annotation-driven />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${mail.send.host}" />
+		<property name="port" value="${mail.send.port}" />
+		<property name="username" value="${mail.send.username}" />
+		<property name="password" value="${mail.send.password}" />
+
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">${mail.send.javaMailProperties.mail.smtp.auth}
+				</prop>
+				<prop key="mail.smtp.starttls.enable">${mail.send.javaMailProperties.mail.smtp.starttls.enable}
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/pages/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+		 <!-- setting maximum upload size -->
+		<property name="maxUploadSize" value="100000" />
+
+	</bean>
+	
+	<beans profile="TEST">
+		<!--
+		<jdbc:embedded-database id="dataSource" type="HSQL">
+		  	<jdbc:script location="classpath:create-db.sql" />
+			<jdbc:script location="classpath:insert-data.sql" />
+			
+		</jdbc:embedded-database>
+		-->
+	</beans>
+
+</beans>

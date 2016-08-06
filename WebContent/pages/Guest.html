@@ -1,0 +1,22 @@
+<div ng-controller="guestController">
+	<div id="searchNdHome">
+		
+		<button>Export to Excel</button>
+		<span>|</span> <a href="#main" style="color: white">Home</a>
+	</div>
+	<div>
+		<h1>Add an employee</h1>
+		<br> <img width=40px height=40px style="PADDING-LEFT: 40px"
+			ng-src="../images/addEmployee.jpg" ng-click="cancelForm()">
+		<input class="bar" type="search" ng-model="search"
+			placeholder=" search" ng-click=guestSearch()>
+	</div>
+	<div class="dashboard-container">
+		<div ng-diable="show=='addEmployee'" ng-hide="search">
+			<div ng-include="'addEmployee.html'"></div>
+		</div>
+		<div ng-show="search">
+			<div ng-include="'searchGuest.html'"></div>
+		</div>
+	</div>
+</div>
