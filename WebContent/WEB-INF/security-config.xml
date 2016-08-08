@@ -11,7 +11,7 @@
 
 		<form-login login-page="/loginPage.do" login-processing-url="/login.do" username-parameter="ssoId" 
 			password-parameter="password" authentication-failure-url="/loginPage.do?error=true"
-			always-use-default-target="true" default-target-url="/admin/home.do" />
+			always-use-default-target="true" default-target-url="/admin/AdminDashboard.do" />
 
 		<access-denied-handler ref="accessDeniedHandlerImpl" />
 

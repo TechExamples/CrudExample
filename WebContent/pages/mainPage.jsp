@@ -1,7 +1,7 @@
 <div align="center">
 <div id="wrap">
 	<div class="left">
-		<a href="#admin"><img id="mainImage" alt=" " src="../images/admin.jpg"></a><br>
+		<a href="login.jsp"><img id="mainImage" alt=" " src="../images/admin.jpg"></a><br>
 		<label>Admin</label>
 	</div>
 	<div class="right">

@@ -11,15 +11,16 @@
 					<th class="css-table-cellAdmin"><label>Due Date</label></th>
 		</tr>
 	</table>
-	<li ng-repeat="employee in employeesList"
-		ng-if="employee.ReqStatus == 1"><div ng-controller="showCtrl">
+<!-- 	<li ng-repeat="employee in employeesList"
+		ng-if="employee.ReqStatus == 1"> -->
+			<li ng-repeat="employee in employeesList"><div ng-controller="showCtrl">
 			<div style="padding:5px">
 			<br>
 				<div ng-click="ShowHide()" class="content">
-					<div style="color: blue;">{{employee.Name}}</div>
-					<div>{{employee.EmpId}}</div>
-					<div>{{employee.EmpEmail}}</div>
-					<div>{{employee.ManagerEmail}}</div>
+					<div style="color: blue;">{{employee.name}}</div>
+					<div>{{employee.id}}</div>
+					<div>{{employee.email}}</div>
+					<div>{{employee.managerId}}</div>
 					<div>{{FromDate|date:'yyyy-MM-dd'}}</div>
 				</div>
 				<br>

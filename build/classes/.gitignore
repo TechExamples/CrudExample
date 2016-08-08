@@ -1,7 +1,1 @@
-/PROD-crudExample.properties
-/TEST-crudExample.properties
-/application.properties
 /com/
-/create-db.sql
-/insert-data.sql
-/log4j2.xml

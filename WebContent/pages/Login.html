@@ -1,6 +1,6 @@
 <div ng_controller="LoginCtrl" class="lg-container">
 		<h1>Admin</h1>
-		<form name="lg-form" id="lg-form">
+		<form name="lg-form" id="lg-form" action="/login.do">
 
 			<div>
 				<label>Username</label> <input type="text" id="username"
@@ -14,8 +14,7 @@
 					required</span>
 			</div>
 			<div align = "center">
-				<button type="submit"  ng-click=validate(username,password) 
-					id="login">Login</button>
+				<button type="submit" id="login" >Login</button>
 			</div>
 
 

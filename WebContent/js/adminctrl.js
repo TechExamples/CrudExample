@@ -1,4 +1,5 @@
-index.controller('adminController',['$scope', '$http', '$filter', function($scope, $http, $filter) {
+var admin = angular.module('admin', [ 'ngAnimate' ]);
+admin.controller('adminController',['$scope', '$http', '$filter', function($scope, $http, $filter) {
 
  	$scope.tabs = [ {
  		title : 'Pending requests',
@@ -26,26 +27,31 @@ index.controller('adminController',['$scope', '$http', '$filter', function($scop
  	$scope.duedate = $scope.FromDate.setDate($scope.FromDate.getDate() + 14); 
  	$scope.countOne=0;
  	$scope.countTwo=0;
- 	$http.get("../json/employee.json").then(function(response) {
+ 	$http.get("../admin/employees.json").then(function(response) {
  		console.log("entered into then function");
+ 		
  		$scope.employeesList = response.data;
+ 		console.log(JSON.stringify(response.data));
+ 		console.log($scope.employeesList);
  		//$scope.count = Object.keys($scope.employeesList).length;
  		angular.forEach($scope.employeesList, function(
 				employee, index) {
- 			console.log(employee.ReqStatus);
- 		if(employee.ReqStatus == 0){
- 			$scope.countOne=$scope.countOne+1;
  			
- 		}else if(employee.ReqStatus == 1){
- 			$scope.countTwo=$scope.countTwo+1;
- 		}
-
+ 	 		//$scope.count = Object.keys($scope
+// 			console.log(employee.ReqStatus);
+// 		if(employee.ReqStatus == 0){
+// 			$scope.countOne=$scope.countOne+1;
+// 			
+// 		}else if(employee.ReqStatus == 1){
+// 			$scope.countTwo=$scope.countTwo+1;
+// 		}
+//
  		});
  		console.log("response.data :" + JSON.stringify(response.data));
  	});
  	$scope.adminSearch = function() {
  		console.log("u entered into adminsearch method");
- 		$http.get("../json/employee.json").then(
+ 		$http.get("../admin/employees.json").then(
  				function(response) {
  					console.log("entered into then function");
  					$scope.employees = response.data;
@@ -64,3 +70,10 @@ index.controller('adminController',['$scope', '$http', '$filter', function($scop
          $scope.employees.splice(index, 1);
      };
  }]);
+admin.controller('showCtrl', function($scope) {
+ 	$scope.IsHidden = true;
+ 	$scope.ShowHide = function() {
+ 		//If DIV is hidden it will be visible and vice versa.
+ 		$scope.IsHidden = $scope.IsHidden ? false : true;
+ 	}
+ });

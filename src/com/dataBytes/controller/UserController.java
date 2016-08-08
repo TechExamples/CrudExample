@@ -74,5 +74,20 @@ public class UserController {
 		return model;
 
 	}
+	
+	@RequestMapping(value = "/index")
+	public ModelAndView indexPage() {
 
+		ModelAndView model = new ModelAndView("index");
+		return model;
+
+	}
+	
+	@RequestMapping(value = "/admin/AdminDashboard")
+	public ModelAndView adminDashboard() {
+
+		ModelAndView model = new ModelAndView("AdminDashboard");
+		return model;
+
+	}
 }
