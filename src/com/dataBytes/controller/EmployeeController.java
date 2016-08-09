@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +46,7 @@ public class EmployeeController {
 	 * Size of a byte buffer to read/write file
 	 */
 	private static final int BUFFER_SIZE = 4096;
+	String rootPath = System.getProperty("catalina.home") + File.separator + "tmpFiles";
 
 	@Autowired
 	private EmployeeService employeeService;
@@ -144,19 +147,19 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = { "/guest/employee/{id}", "/admin/employee/{id}" }, method = RequestMethod.POST)
-	public ResponseEntity<?> add(@RequestBody Employee employee, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<?> add(@Valid @RequestBody Employee employee, UriComponentsBuilder ucBuilder,
+			BindingResult bindingResult) {
 
-		if (null == employee) {
-
-			String msg = "Can not support request with empty employee object";
+		if (bindingResult.hasErrors()) {
+			String msg = "Input data validation failed";
 			log.info(msg);
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
-
 		} else {
 
 			if (employeeService.isExist(employee.getId())) {
 				HttpHeaders headers = new HttpHeaders();
-				headers.setLocation(ucBuilder.path("/admin/employee/"+employee.getId()).buildAndExpand(employee.getId()).toUri());
+				headers.setLocation(
+						ucBuilder.path("/admin/employee/" + employee.getId()).buildAndExpand(employee.getId()).toUri());
 				String msg = "A Employee with Id " + employee.getId() + " already exist";
 				log.info(msg);
 				return new ResponseEntity<String>(msg, headers, HttpStatus.CONFLICT);
@@ -167,20 +170,19 @@ public class EmployeeController {
 			if (employeeService.add(employee)) {
 				mailHandler.sendMail("Employee Add", "Employee Added Successfully");
 				HttpHeaders headers = new HttpHeaders();
-				headers.setLocation(ucBuilder.path("/admin/employee/"+employee.getId()).buildAndExpand(employee.getId()).toUri());
-				return new ResponseEntity<Void>(headers,HttpStatus.CREATED);
+				headers.setLocation(
+						ucBuilder.path("/admin/employee/" + employee.getId()).buildAndExpand(employee.getId()).toUri());
+				return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 			} else {
 				String errorMessage = "Employee Add not happend whle adding to database due to request unfulfillment or internal server issue.";
 				log.error(errorMessage + "employe =" + employee);
 				return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-
 			}
 
 		} catch (Exception e) {
 			log.error("Exception occured in employeeService calling for employe =" + employee, e);
 			String errorMessage = e + " <== error";
 			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-
 		}
 	}
 
@@ -199,9 +201,7 @@ public class EmployeeController {
 				String msg = "A Employee with Id " + employee.getId() + " does not exist";
 				log.info(msg);
 				return new ResponseEntity<String>(msg, HttpStatus.NOT_FOUND);
-
 			}
-
 		}
 
 		try {
@@ -249,72 +249,77 @@ public class EmployeeController {
 	/**
 	 * Upload multiple file using Spring Controller
 	 */
-	@RequestMapping(value = "/admin/{id}/file/{filename}", method = RequestMethod.POST)
-	public ResponseEntity<?> uploadMultipleFileHandler(@RequestParam(value = "id", required = true) long id,
-			@RequestParam("name") String[] names, @RequestParam("file") MultipartFile[] files) {
+	@RequestMapping(value = "/admin/{id}/file", method = RequestMethod.POST)
+	public ResponseEntity<?> uploadMultipleFileHandler(@PathVariable(value = "id") long id,
+			@RequestParam("filenames") String[] filenames, @RequestParam("files") MultipartFile[] files) {
 
 		String msg = null;
-		if (files.length != names.length) {
+		if (files.length != filenames.length) {
 			msg = "Mandatory information missing";
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
 
-		String message = "";
 		for (int i = 0; i < files.length; i++) {
 			MultipartFile file = files[i];
-			String name = names[i];
-			try {
-				byte[] bytes = file.getBytes();
+			String filename = filenames[i];
 
+			try {
 				// Creating the directory to store file
-				String rootPath = System.getProperty("catalina.home");
-				File dir = new File(rootPath + File.separator + "tmpFiles" + File.separator + id);
+				File dir = new File(rootPath + File.separator + id);
 				if (!dir.exists())
 					dir.mkdirs();
 
 				// Create the file on server
-				File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
+				File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
 
 				if (serverFile.exists()) {
-					serverFile.delete();
+					FileUtils.forceDelete(serverFile);
 				}
 
-				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
-				stream.write(bytes);
-				stream.close();
+				try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile))) {
+					stream.write(file.getBytes());
+				} catch (Exception e) {
+					msg = "Exception in coping Multipart file data to output stream object";
+					log.error(msg, e);
+					throw e;
+				}
 
 				log.info("Server File Location=" + serverFile.getAbsolutePath());
-
-				message = message + "You successfully uploaded file=" + name;
+				msg = msg + "You successfully uploaded file=" + filename;
 
 			} catch (Exception e) {
 				log.error("Exception occured in while access file upload for emp id " + id
 						+ ". Most likely file permissions issue ", e);
 				msg = e + " <== error";
-				return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
-
+				return new ResponseEntity<String>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
-		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+		return new ResponseEntity<String>(msg, HttpStatus.CREATED);
 	}
 
+	/**
+	 * Download the file
+	 * 
+	 * @param request
+	 * @param response
+	 * @param id
+	 *            Employee id
+	 * @param filename
+	 *            Filename to be downloaded
+	 * @return FileContent
+	 */
 	@RequestMapping(value = "/admin/{id}/file/{filename}", method = RequestMethod.GET)
-	public ResponseEntity<?> getFile(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(value = "id", required = true) long id,
-			@RequestParam(value = "name", required = true) String filename) {
+	public ResponseEntity<?> downloadFile(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable(value = "id") long id, @PathVariable(value = "filename") String filename) {
 
 		String msg = null;
-		String message = "";
-
-		// Creating the directory to store file
-		String rootPath = System.getProperty("catalina.home");
-		File dir = new File(rootPath + File.separator + "tmpFiles" + File.separator + id);
+		File dir = new File(rootPath + File.separator + id);
 
 		// Create the file on server
 		File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
 		if (!serverFile.exists()) {
 			msg = "Required File not found";
-			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(msg, HttpStatus.NOT_FOUND);
 		}
 
 		try (FileInputStream inputStream = new FileInputStream(serverFile);
@@ -346,7 +351,7 @@ public class EmployeeController {
 
 			log.info("Server File Location=" + serverFile.getAbsolutePath());
 
-			message = message + "You successfully downloaded file=" + serverFile.getName();
+			msg = msg + "You successfully downloaded file=" + serverFile.getName();
 
 		} catch (Exception e) {
 			log.error("Exception occured in while access file upload for emp id " + id
@@ -355,59 +360,40 @@ public class EmployeeController {
 			return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
-		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+		return new ResponseEntity<String>(msg, HttpStatus.ACCEPTED);
 	}
 
 	/**
-	 * Upload multiple file using Spring Controller
+	 * Delete server file
 	 */
 	@RequestMapping(value = "/admin/{id}/file/{filename}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteFile(@RequestParam(value = "filename", required = true) long id,
-			@RequestParam("name") String[] names, @RequestParam("file") MultipartFile[] files) {
+	public ResponseEntity<?> deleteFile(@PathVariable(value = "id") long id,
+			@PathVariable(value = "filename") String filename) {
 
 		String msg = null;
-		if (files.length != names.length) {
-			msg = "Mandatory information missing";
-			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
-		}
+		try {
 
-		String message = "";
-		for (int i = 0; i < files.length; i++) {
-			MultipartFile file = files[i];
-			String name = names[i];
-			try {
-				byte[] bytes = file.getBytes();
+			File dir = new File(rootPath + File.separator + id);
+			File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
 
-				// Creating the directory to store file
-				String rootPath = System.getProperty("catalina.home");
-				File dir = new File(rootPath + File.separator + "tmpFiles" + File.separator + id);
-				if (!dir.exists())
-					dir.mkdirs();
+			if (!dir.exists() && !serverFile.exists()) {
+				msg = "File does not exist";
+				log.info(msg + ". Server File Location=" + serverFile.getAbsolutePath());
 
-				// Create the file on server
-				File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
-
-				if (serverFile.exists()) {
-					serverFile.delete();
-				}
-
-				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
-				stream.write(bytes);
-				stream.close();
-
-				log.info("Server File Location=" + serverFile.getAbsolutePath());
-
-				message = message + "You successfully uploaded file=" + name;
-
-			} catch (Exception e) {
-				log.error("Exception occured in while access file upload for emp id " + id
-						+ ". Most likely file permissions issue ", e);
-				msg = e + " <== error";
-				return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
-
+				return new ResponseEntity<String>(msg, HttpStatus.NO_CONTENT);
 			}
+			FileUtils.forceDelete(serverFile);
+
+			msg = msg + "Successfully Deleted file=" + filename;
+
+		} catch (Exception e) {
+			log.error("Exception occured in while deleting file " + filename + " for emp id " + id
+					+ ". Most likely file permissions issue ", e);
+			msg = e + " <== error";
+			return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
-		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+		return new ResponseEntity<String>(msg, HttpStatus.ACCEPTED);
 	}
 
 }

@@ -7,6 +7,7 @@
 	click Install/Update button
 	Use your Eclipse IDE as usual 
 
+//RESTFUL url's to access from client (AngularJS)
 POST /login.do  --Login action URL
 	InputPage: /loginPage.do
 	ssoId
@@ -34,7 +35,6 @@ POST /guest/employee/{id} , /admin/employee/{id}  --To add Employee with employe
 	     409 - CONFLICT  -- Employee with id already exist in DB
 	     500 - INTERNAL_SERVER_ERROR  --Due to server issue update not happend
 	     201 - CREATED --added successfully
-	
 
 PUT /admin/employee/{id}  --To update employee with employee id {id}
 	RET: 400 - BAD_REQUEST -- Request is incorrect
@@ -48,15 +48,22 @@ DELETE /admin/employee/{id}  --To Delete employee with employee id {id}
 	     500 - INTERNAL_SERVER_ERROR  --Due to server issue update not happend
 	     202 - ACCEPTED --Deleted successfully
 	     
+POST /admin/{id}/file  --To upload multiple files to employee {id}
+	VAR: filenames - Array of filenameS to be uploaded
+	     files - Array of files to uploaded
+	RET: 400 - BAD_REQUEST -- Request is incorrect
+	     500 - INTERNAL_SERVER_ERROR  --Due to server issue, files uploaded not happend
+	     201 - CREATED --Uploaded successfully
+	     
 GET /admin/{id}/file/{filename}  --To get a file {filename} for employee with id {id}	     
 	RET: 400 - BAD_REQUEST -- Request is incorrect
-		 204 - NO_CONTENT  --No data found
+		 404 - NOT_FOUND --Filename {filename} for Employee with id {id} not found in DB
 		 500 - INTERNAL_SERVER_ERROR  --Due to server issue update not happend
 	     200 - OK -- fetched file {filename} for employee {id}
 		 
 DELETE /admin/{id}/file/{filename}  --To delete a file {filename} for employee with id {id}	     
 	RET: 400 - BAD_REQUEST -- Request is incorrect
-	     404 - NOT_FOUND  -- Employee with id not found in DB
+	     204 - NO_CONTENT  -- Filename {filename} for Employee with id {id} not found in DB
 	     500 - INTERNAL_SERVER_ERROR  --Due to server issue update not happend
 	     202 - ACCEPTED --Deleted {filename} for employee {id}
 	   

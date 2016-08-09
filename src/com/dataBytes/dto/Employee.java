@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dataBytes.controller.EmployeeController;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -60,7 +61,7 @@ public class Employee implements Serializable{
 	private String dsId;
 	
 	@Temporal(TemporalType.DATE)
-	@Getter @Setter @Column (name="BADGEENDDATE", nullable = false)
+	@Getter @Setter @JsonProperty @Column (name="BADGEENDDATE", nullable = false)
 	private Date badgeEndDate;
 		
 	@Getter @Setter @JsonProperty @Column (name="EMAIL", nullable = false)
@@ -81,14 +82,14 @@ public class Employee implements Serializable{
 			@JoinColumn(name = "EMPLOYEE_PRIVILEGE_ID") })
 	private Set<Privilege> privileges = new HashSet<Privilege>();
 	
-	@Getter @Setter @Column (name="DELETEFLAG")
+	@Getter @Setter @JsonIgnore @Column (name="DELETEFLAG")
 	private Boolean deleteFlag;
 	
-	@Getter @Setter @Column (name="LASTMODIFIEDBY")
+	@Getter @Setter @JsonIgnore @Column (name="LASTMODIFIEDBY")
 	private String lastModifiedBy;
 	
 	@Temporal(TemporalType.DATE)
-	@Getter @Setter @Column (name="LASTMODIFIED")
+	@Getter @Setter @JsonIgnore @Column (name="LASTMODIFIED")
 	private Date lastModified;
 	
 	@Getter @Setter @JsonProperty @Transient
