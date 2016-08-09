@@ -53,23 +53,23 @@ public class Employee implements Serializable{
 	@Getter @Setter @JsonProperty @Column (name="NAME", nullable = false, length = 100)
 	private String name;
 	
-	@Getter @Setter @JsonProperty @Column (name="APPAREA")
+	@Getter @Setter @JsonProperty @Column (name="APPAREA", nullable = false)
 	private String appArea;	
 	
-	@Getter @Setter @JsonProperty @Column (name="DSID")
+	@Getter @Setter @JsonProperty @Column (name="DSID", nullable = false)
 	private String dsId;
 	
 	@Temporal(TemporalType.DATE)
-	@Getter @Setter @Column (name="BADGEENDDATE")
+	@Getter @Setter @Column (name="BADGEENDDATE", nullable = false)
 	private Date badgeEndDate;
 		
-	@Getter @Setter @JsonProperty @Column (name="EMAIL")
+	@Getter @Setter @JsonProperty @Column (name="EMAIL", nullable = false)
 	private String email;
 	
-	@Getter @Setter @JsonProperty @Column (name="CUBICLEID")
+	@Getter @Setter @JsonProperty @Column (name="CUBICLEID", nullable = false)
 	private String cubicleId;	
 	
-	@Getter @Setter @JsonProperty @Column (name="MANAGERID")
+	@Getter @Setter @JsonProperty @Column (name="MANAGERID", nullable = false)
 	private String managerId;
 	
 	@Getter @Setter @JsonProperty @Column (name="REQUESTTYPE")

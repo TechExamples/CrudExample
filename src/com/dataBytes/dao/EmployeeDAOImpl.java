@@ -30,7 +30,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     public boolean isExist(Long id) {
     	Session session = sessionFactory.getCurrentSession();
 		try {
-			session.beginTransaction();
 			SQLQuery query = session.createSQLQuery("select 1 from Employee where ID=:id");
 			
 			
@@ -39,7 +38,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		    
 		} catch (Exception e) {
 			e.printStackTrace();
-			session.getTransaction().rollback();
+			
 		}
 		return false;		
     }
@@ -48,13 +47,10 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	public void add(Employee item) {
 		Session session = sessionFactory.getCurrentSession();
 		try {
-			session.beginTransaction();
 			session.save(item);
 		  } catch (HibernateException e) {
 			  e.printStackTrace();
-			  session.getTransaction().rollback();
 		}
-			session.getTransaction().commit();
 	}
 	
     @Override 	
@@ -62,14 +58,10 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		
 		Session session = sessionFactory.getCurrentSession();
 		try {
-			System.out.println("IN Update");
-			session.beginTransaction();
 			session.saveOrUpdate(item);
 			} catch (HibernateException e) {
 				e.printStackTrace();
-				session.getTransaction().rollback();
 			}
-		session.getTransaction().commit();
 	}
 	
 	@Override 
@@ -77,14 +69,10 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		Session session = sessionFactory.getCurrentSession();
 		Employee item=null;
 		try {
-			System.out.println("IN GetIteam");
-			session.beginTransaction();
-		    item = (Employee) session.get(Employee.class, id);
+			item = (Employee) session.get(Employee.class, id);
 		} catch (HibernateException e) {
 			e.printStackTrace();
-			session.getTransaction().rollback();
 		}
-		session.getTransaction().commit();
 		return item;
 	}
 	
@@ -95,7 +83,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		List<Employee> employees = null;
 		try {
 			log.debug("calling getByName procedure");
-			session.beginTransaction();
 			Query query = session.createQuery("from Employee where ID=:idOrName "
 					+ "or FIRSTNAME||MIDDLENAME||LASTNAME like '%:name%' ");
 			
@@ -106,9 +93,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	
 		} catch (Exception e) {
 			e.printStackTrace();
-			session.getTransaction().rollback();
 		}
-		session.getTransaction().commit();
 		return employees;
 	}
 	
@@ -119,8 +104,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		List<Employee> employees = null;
 		try {
 			System.out.println("In getEmployee(String idOrName)");
-			session.beginTransaction();
-		    //item = (EmployeeMap) session.get(EmployeeMap.class, id);
+			//item = (EmployeeMap) session.get(EmployeeMap.class, id);
 			Query query = session.createQuery("from Employee where ID=:idOrName "
 					+ "or FIRSTNAME||MIDDLENAME||LASTNAME like '%:idOrName%' ");
 			
@@ -131,21 +115,17 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		    
 		} catch (Exception e) {
 			e.printStackTrace();	
-			session.getTransaction().rollback();
 		}
-		session.getTransaction().commit();
 		return employees;
 	}
 	
 	@Override 
 	public void delete(Long id) {
 		Session session = sessionFactory.getCurrentSession();
-		session.beginTransaction();
 		Employee item = (Employee) session.get(Employee.class, id);
 		if(null != item) {
 			session.delete(item);
 		}
-		session.getTransaction().commit();
 		//return item;
 	}
 

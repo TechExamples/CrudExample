@@ -39,76 +39,60 @@ import com.dataBytes.service.EmployeeService;
 public class EmployeeController {
 
 	/**
-     * Size of a byte buffer to read/write file
-     */
-    private static final int BUFFER_SIZE = 4096;
-    
+	 * Size of a byte buffer to read/write file
+	 */
+	private static final int BUFFER_SIZE = 4096;
+
 	@Autowired
 	private EmployeeService employeeService;
 
 	@Autowired
 	private MailHandler mailHandler;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
-	
+
 	/*
-	@RequestMapping(value = "/listEmployee", method = RequestMethod.GET)
-	public ModelAndView list() {
-		System.out.println("We are in list block");
-		List<Employee> employeeList = employeeDAO.list(-1, -1);
-		ModelAndView model = new ModelAndView("ListEmployee");
-		model.addObject("employeeList", employeeList);
-		return model;
-	}
-	
-	@RequestMapping(value = "/addEmployee", method = RequestMethod.GET)
-	public ModelAndView add() {
-		log.debug("Entered into add");	
-		ModelAndView model = new ModelAndView("AddEmployee");
-		model.addObject("employee", new Employee());
-		List<Employee> employeeList = employeeDAO.list(-1, -1);
-		model.addObject("employeeList", employeeList);
-		return model;
-	}
-	
-	@RequestMapping(value = "/editEmployee", method = RequestMethod.GET)
-	public ModelAndView edit(@RequestParam(value = "id", required = true) Long id) {
-		System.out.println("Id= " + id);
-		ModelAndView model = new ModelAndView("AddEmployee");
-		Employee employee = employeeDAO.get(id);
-		model.addObject("employee", employee);
-		List<Employee> employeeList = employeeDAO.list(-1,-1);
-		model.addObject("employeeList", employeeList);
-		return model;
-	}
+	 * @RequestMapping(value = "/listEmployee", method = RequestMethod.GET)
+	 * public ModelAndView list() { System.out.println("We are in list block");
+	 * List<Employee> employeeList = employeeDAO.list(-1, -1); ModelAndView
+	 * model = new ModelAndView("ListEmployee"); model.addObject("employeeList",
+	 * employeeList); return model; }
+	 * 
+	 * @RequestMapping(value = "/addEmployee", method = RequestMethod.GET)
+	 * public ModelAndView add() { log.debug("Entered into add"); ModelAndView
+	 * model = new ModelAndView("AddEmployee"); model.addObject("employee", new
+	 * Employee()); List<Employee> employeeList = employeeDAO.list(-1, -1);
+	 * model.addObject("employeeList", employeeList); return model; }
+	 * 
+	 * @RequestMapping(value = "/editEmployee", method = RequestMethod.GET)
+	 * public ModelAndView edit(@RequestParam(value = "id", required = true)
+	 * Long id) { System.out.println("Id= " + id); ModelAndView model = new
+	 * ModelAndView("AddEmployee"); Employee employee = employeeDAO.get(id);
+	 * model.addObject("employee", employee); List<Employee> employeeList =
+	 * employeeDAO.list(-1,-1); model.addObject("employeeList", employeeList);
+	 * return model; }
+	 * 
+	 * @RequestMapping(value = "/deleteEmployee", method = RequestMethod.GET)
+	 * public ModelAndView delete(@RequestParam(value = "id", required = true)
+	 * Long id) { ModelAndView model = new ModelAndView("AddEmployee");
+	 * employeeDAO.delete(id); model.addObject("employee", new Employee());
+	 * List<Employee> employeeList = employeeDAO.list(-1,-1);
+	 * model.addObject("employeeList", employeeList); mailHandler.sendMail(
+	 * "Employee Remove", "Employee Removed Successfully"); return model; }
+	 * 
+	 * @RequestMapping(value = "/saveEmployee", method = RequestMethod.POST)
+	 * public ModelAndView save(@ModelAttribute("employee") Employee employee) {
+	 * log.info("Input employee object: "+employee); if (null != employee)
+	 * employeeDAO.add(employee);
+	 * 
+	 * ModelAndView model = new ModelAndView("AddEmployee");
+	 * model.addObject("employee", employee); List<Employee> employeeList =
+	 * employeeDAO.list(-1, -1); model.addObject("employeeList", employeeList);
+	 * mailHandler.sendMail("Employee Add", "Employee Added Successfully");
+	 * return model; }
+	 * 
+	 */
 
-	@RequestMapping(value = "/deleteEmployee", method = RequestMethod.GET)
-	public ModelAndView delete(@RequestParam(value = "id", required = true) Long id) {
-		ModelAndView model = new ModelAndView("AddEmployee");
-		employeeDAO.delete(id);
-		model.addObject("employee", new Employee());
-		List<Employee> employeeList = employeeDAO.list(-1,-1);
-		model.addObject("employeeList", employeeList);
-		mailHandler.sendMail("Employee Remove", "Employee Removed Successfully");
-		return model;
-	}
-
-	@RequestMapping(value = "/saveEmployee", method = RequestMethod.POST)
-	public ModelAndView save(@ModelAttribute("employee") Employee employee) {
-		log.info("Input employee object: "+employee);
-		if (null != employee)			
-			employeeDAO.add(employee);
-
-		ModelAndView model = new ModelAndView("AddEmployee");
-		model.addObject("employee", employee);
-		List<Employee> employeeList = employeeDAO.list(-1, -1);
-		model.addObject("employeeList", employeeList);
-		mailHandler.sendMail("Employee Add", "Employee Added Successfully");
-		return model;
-	}
-	
-	*/
-	
 	@RequestMapping(value = "/admin/home")
 	public ModelAndView displayHomePage() {
 		log.debug("displayHomePage");
@@ -117,157 +101,160 @@ public class EmployeeController {
 		model.addObject("employees", employees);
 		return model;
 	}
-	
+
 	@RequestMapping(value = "/admin/employees", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getEmployeesJson() {
-		
-		List<Employee> employees;		
+
+		List<Employee> employees;
 		try {
 			employees = employeeService.findAllEmployees();
 			if (employees == null || employees.isEmpty()) {
-				return new ResponseEntity<List<Employee>>(employees,HttpStatus.NO_CONTENT);
+				return new ResponseEntity<List<Employee>>(employees, HttpStatus.NO_CONTENT);
 			}
-			return new ResponseEntity<List<Employee>>(employees,HttpStatus.OK);
-			
-		} catch(Exception e) {
+			return new ResponseEntity<List<Employee>>(employees, HttpStatus.OK);
+
+		} catch (Exception e) {
 			log.error("Exception occured in employeeService calling", e);
 			String errorMessage = e + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 	}
-	
+
 	@RequestMapping(value = "/admin/employee/{idOrName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getEmployeesJson(@PathVariable(value = "idOrName") String idOrName) {
 		List<Employee> employees;
-		
+
 		try {
 			employees = employeeService.findByIdOrName(idOrName);
 			if (employees == null || employees.isEmpty()) {
-				return new ResponseEntity<List<Employee>>(employees,HttpStatus.NO_CONTENT);
-			}			
-			
-		} catch(Exception e) {
-			log.error("Exception occured in employeeService calling for idOrName ="+idOrName, e);
+				return new ResponseEntity<List<Employee>>(employees, HttpStatus.NO_CONTENT);
+			}
+
+		} catch (Exception e) {
+			log.error("Exception occured in employeeService calling for idOrName =" + idOrName, e);
 			String errorMessage = e + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
-		return new ResponseEntity<List<Employee>>(employees,HttpStatus.OK);
-		
+
+		return new ResponseEntity<List<Employee>>(employees, HttpStatus.OK);
+
 	}
-	
-	@RequestMapping(value = {"/guest/employee/{id}","/admin/employee/{id}"}, method = RequestMethod.POST)
+
+	@RequestMapping(value = { "/guest/employee/{id}", "/admin/employee/{id}" }, method = RequestMethod.POST)
 	public ResponseEntity<?> add(@ModelAttribute("employee") Employee employee, UriComponentsBuilder ucBuilder) {
-		
-		if (null == employee) {			
-			
+
+		if (null == employee) {
+
 			String msg = "Can not support request with empty employee object";
-			log.info(msg);			
+			log.info(msg);
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
-			
+
 		} else {
 
 			if (employeeService.isExist(employee.getId())) {
 				String msg = "A Employee with Id " + employee.getId() + " already exist";
 				log.info(msg);
-				return new ResponseEntity<String>(msg,HttpStatus.CONFLICT);				
+				return new ResponseEntity<String>(msg, HttpStatus.CONFLICT);
 			}
 		}
-		
+
 		try {
-			employeeService.add(employee);
-			
+			if (employeeService.add(employee)) {
+				mailHandler.sendMail("Employee Add", "Employee Added Successfully");
+				// HttpHeaders headers = new HttpHeaders();
+				// headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(employee.getId()).toUri());
+				return new ResponseEntity<Void>(HttpStatus.CREATED);
+			} else {
+				String errorMessage = "Employee Add not happend whle adding to database due to request unfulfillment or internal server issue.";
+				log.error(errorMessage + "employe =" + employee);
+				return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+
+			}
+
 		} catch (Exception e) {
-			log.error("Exception occured in employeeService calling for employe ="+employee, e);
+			log.error("Exception occured in employeeService calling for employe =" + employee, e);
 			String errorMessage = e + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-			
+			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
-		
-		mailHandler.sendMail("Employee Add", "Employee Added Successfully");
-		//HttpHeaders headers = new HttpHeaders();
-        //headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(employee.getId()).toUri());
-        return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
-	
+
 	@RequestMapping(value = "/admin/employee/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<?> update(@ModelAttribute("employee") Employee employee, UriComponentsBuilder ucBuilder) {		
-		
-		if (null == employee) {						
+	public ResponseEntity<?> update(@ModelAttribute("employee") Employee employee, UriComponentsBuilder ucBuilder) {
+
+		if (null == employee) {
 
 			String msg = "Can not support request with empty employee object";
-			log.info(msg);			
+			log.info(msg);
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
-			
+
 		} else {
 
 			if (!employeeService.isExist(employee.getId())) {
 				String msg = "A Employee with Id " + employee.getId() + " does not exist";
 				log.info(msg);
-				return new ResponseEntity<String>(msg,HttpStatus.NOT_FOUND);
-				
-			} 
-			
+				return new ResponseEntity<String>(msg, HttpStatus.NOT_FOUND);
+
+			}
+
 		}
-		
+
 		try {
 			employeeService.update(employee);
-			
+
 		} catch (Exception e) {
-			log.error("Exception occured in employeeService calling for employe ="+employee, e);
+			log.error("Exception occured in employeeService calling for employe =" + employee, e);
 			String errorMessage = e + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-			
-		}		
-		
+			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+
 		mailHandler.sendMail("Employee Update", "Employee updated Successfully");
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
-	
+
 	@RequestMapping(value = "/admin/employee/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> delete(@PathVariable long id) {
-		
-		if (id ==  0) {	
+
+		if (id == 0) {
 			String msg = "Can not support request with employee id is 0 or empty";
-			log.info(msg);	
-			return new ResponseEntity<String>( msg,HttpStatus.BAD_REQUEST);
-		
+			log.info(msg);
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
+
 		} else if (!employeeService.isExist(id)) {
-				String msg = "A Employee with Id " + id+ " does not exist";
-				log.info(msg);
-				return new ResponseEntity<String>(msg,HttpStatus.NOT_FOUND);				
-		} 		
-		
+			String msg = "A Employee with Id " + id + " does not exist";
+			log.info(msg);
+			return new ResponseEntity<String>(msg, HttpStatus.NOT_FOUND);
+		}
+
 		try {
 			employeeService.delete(id);
-			
+
 		} catch (Exception e) {
-			log.error("Exception occured in employeeService calling for employe ID ="+id, e);
+			log.error("Exception occured in employeeService calling for employe ID =" + id, e);
 			String errorMessage = e + " <== error";
-	        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-			
+			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
-		
+
 		mailHandler.sendMail("Employee Delete", "Employee deleted Successfully");
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
-	
 
 	/**
 	 * Upload multiple file using Spring Controller
 	 */
 	@RequestMapping(value = "/admin/{id}/file/{filename}", method = RequestMethod.POST)
-	public ResponseEntity<?> uploadMultipleFileHandler(@RequestParam(value="id", required=true) long id, 
-			@RequestParam("name") String[] names,
-			@RequestParam("file") MultipartFile[] files) {
+	public ResponseEntity<?> uploadMultipleFileHandler(@RequestParam(value = "id", required = true) long id,
+			@RequestParam("name") String[] names, @RequestParam("file") MultipartFile[] files) {
 
 		String msg = null;
-		if (files.length != names.length){
+		if (files.length != names.length) {
 			msg = "Mandatory information missing";
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		String message = "";
 		for (int i = 0; i < files.length; i++) {
 			MultipartFile file = files[i];
@@ -278,91 +265,91 @@ public class EmployeeController {
 				// Creating the directory to store file
 				String rootPath = System.getProperty("catalina.home");
 				File dir = new File(rootPath + File.separator + "tmpFiles" + File.separator + id);
-				if (!dir.exists()) dir.mkdirs();
+				if (!dir.exists())
+					dir.mkdirs();
 
 				// Create the file on server
-				File serverFile = new File(dir.getAbsolutePath()+ File.separator + name);
-				
+				File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
+
 				if (serverFile.exists()) {
 					serverFile.delete();
 				}
-				
-				BufferedOutputStream stream = new BufferedOutputStream(
-						new FileOutputStream(serverFile));
+
+				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 				stream.write(bytes);
 				stream.close();
 
-				log.info("Server File Location="+ serverFile.getAbsolutePath());
+				log.info("Server File Location=" + serverFile.getAbsolutePath());
 
-				message = message + "You successfully uploaded file=" + name ;
-				
+				message = message + "You successfully uploaded file=" + name;
+
 			} catch (Exception e) {
-				log.error("Exception occured in while access file upload for emp id "+id+". Most likely file permissions issue ", e);
+				log.error("Exception occured in while access file upload for emp id " + id
+						+ ". Most likely file permissions issue ", e);
 				msg = e + " <== error";
-		        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
-		        
+				return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+
 			}
 		}
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
 
 	@RequestMapping(value = "/admin/{id}/file/{filename}", method = RequestMethod.GET)
-	public ResponseEntity<?> getFile(HttpServletRequest request,
-            HttpServletResponse response,
-            @RequestParam(value="id", required=true) long id, 
-			@RequestParam(value="name", required=true) String filename) {
+	public ResponseEntity<?> getFile(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value = "id", required = true) long id,
+			@RequestParam(value = "name", required = true) String filename) {
 
 		String msg = null;
 		String message = "";
-		
+
 		// Creating the directory to store file
 		String rootPath = System.getProperty("catalina.home");
 		File dir = new File(rootPath + File.separator + "tmpFiles" + File.separator + id);
-		
+
 		// Create the file on server
-		File serverFile = new File(dir.getAbsolutePath()+ File.separator + filename);
+		File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
 		if (!serverFile.exists()) {
 			msg = "Required File not found";
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
-		
-		try(FileInputStream inputStream = new FileInputStream(serverFile); 
-				OutputStream outputStream = response.getOutputStream()) {
-			
-				// get MIME type of the file
-		        String mimeType = request.getServletContext().getMimeType(serverFile.getAbsolutePath());
-		        if (mimeType == null) {
-		            // set to binary type if MIME mapping not found
-		            mimeType = "application/octet-stream";
-		        }
-		        log.info("MIME type: " + mimeType);
-				
-		        // set content attributes for the response
-		        response.setContentType(mimeType);
-		        response.setContentLength((int) serverFile.length());
-		 
-		        String headerKey = "Content-Disposition";
-		        String headerValue = String.format("attachment; filename=\"%s\"", serverFile.getName());
-		        response.setHeader(headerKey, headerValue);
-		 
-		        
-				byte[] buffer = new byte[BUFFER_SIZE];
-		        int bytesRead = -1;
-		 
-		        // write bytes read from the input stream into the output stream
-		        while ((bytesRead = inputStream.read(buffer)) != -1) {
-		        	outputStream.write(buffer, 0, bytesRead);
-		        }
-				
-				log.info("Server File Location="+ serverFile.getAbsolutePath());
 
-				message = message + "You successfully downloaded file=" + serverFile.getName();
-				
+		try (FileInputStream inputStream = new FileInputStream(serverFile);
+				OutputStream outputStream = response.getOutputStream()) {
+
+			// get MIME type of the file
+			String mimeType = request.getServletContext().getMimeType(serverFile.getAbsolutePath());
+			if (mimeType == null) {
+				// set to binary type if MIME mapping not found
+				mimeType = "application/octet-stream";
+			}
+			log.info("MIME type: " + mimeType);
+
+			// set content attributes for the response
+			response.setContentType(mimeType);
+			response.setContentLength((int) serverFile.length());
+
+			String headerKey = "Content-Disposition";
+			String headerValue = String.format("attachment; filename=\"%s\"", serverFile.getName());
+			response.setHeader(headerKey, headerValue);
+
+			byte[] buffer = new byte[BUFFER_SIZE];
+			int bytesRead = -1;
+
+			// write bytes read from the input stream into the output stream
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, bytesRead);
+			}
+
+			log.info("Server File Location=" + serverFile.getAbsolutePath());
+
+			message = message + "You successfully downloaded file=" + serverFile.getName();
+
 		} catch (Exception e) {
-			log.error("Exception occured in while access file upload for emp id "+id+". Most likely file permissions issue ", e);
+			log.error("Exception occured in while access file upload for emp id " + id
+					+ ". Most likely file permissions issue ", e);
 			msg = e + " <== error";
-	        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
-	        
+			return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
@@ -371,16 +358,15 @@ public class EmployeeController {
 	 * Upload multiple file using Spring Controller
 	 */
 	@RequestMapping(value = "/admin/{id}/file/{filename}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteFile(@RequestParam(value="filename", required=true) long id, 
-			@RequestParam("name") String[] names,
-			@RequestParam("file") MultipartFile[] files) {
+	public ResponseEntity<?> deleteFile(@RequestParam(value = "filename", required = true) long id,
+			@RequestParam("name") String[] names, @RequestParam("file") MultipartFile[] files) {
 
 		String msg = null;
-		if (files.length != names.length){
+		if (files.length != names.length) {
 			msg = "Mandatory information missing";
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		String message = "";
 		for (int i = 0; i < files.length; i++) {
 			MultipartFile file = files[i];
@@ -391,32 +377,33 @@ public class EmployeeController {
 				// Creating the directory to store file
 				String rootPath = System.getProperty("catalina.home");
 				File dir = new File(rootPath + File.separator + "tmpFiles" + File.separator + id);
-				if (!dir.exists()) dir.mkdirs();
+				if (!dir.exists())
+					dir.mkdirs();
 
 				// Create the file on server
-				File serverFile = new File(dir.getAbsolutePath()+ File.separator + name);
-				
+				File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
+
 				if (serverFile.exists()) {
 					serverFile.delete();
 				}
-				
-				BufferedOutputStream stream = new BufferedOutputStream(
-						new FileOutputStream(serverFile));
+
+				BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(serverFile));
 				stream.write(bytes);
 				stream.close();
 
-				log.info("Server File Location="+ serverFile.getAbsolutePath());
+				log.info("Server File Location=" + serverFile.getAbsolutePath());
 
-				message = message + "You successfully uploaded file=" + name ;
-				
+				message = message + "You successfully uploaded file=" + name;
+
 			} catch (Exception e) {
-				log.error("Exception occured in while access file upload for emp id "+id+". Most likely file permissions issue ", e);
+				log.error("Exception occured in while access file upload for emp id " + id
+						+ ". Most likely file permissions issue ", e);
 				msg = e + " <== error";
-		        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
-		        
+				return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+
 			}
 		}
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
-		
+
 }

@@ -22,7 +22,7 @@ index
 					};
 					$scope.guestSearch = function() {
 						console.log("u entered into guestSearch method");
-						$http.get("../json/employee.json").then(
+						$http.get("../admin/employees.json").then(
 								function(response) {
 									console.log("entered into then function");
 									$scope.employees = response.data;
@@ -43,7 +43,7 @@ index
 index.factory("employeeService", [ '$http', function($http) {
 	var fac = {};
 	fac.AddEmployeeToDB = function(employee) {
-		$http.post("../guest/employee/45",employee).success(function(response){
+		$http.post("../guest/employee/45.json",employee).success(function(response){
 			alert(response.status);
 		})
 
