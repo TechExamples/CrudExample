@@ -49,8 +49,8 @@ DELETE /admin/employee/{id}  --To Delete employee with employee id {id}
 	     202 - ACCEPTED --Deleted successfully
 	     
 POST /admin/{id}/file  --To upload multiple files to employee {id}
-	VAR: filenames - Array of filenameS to be uploaded
-	     files - Array of files to uploaded
+	PARAMS: filenames - Array of filenames to be uploaded
+	        files - Array of files to uploaded
 	RET: 400 - BAD_REQUEST -- Request is incorrect
 	     500 - INTERNAL_SERVER_ERROR  --Due to server issue, files uploaded not happend
 	     201 - CREATED --Uploaded successfully

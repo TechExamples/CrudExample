@@ -18,10 +18,14 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 
 import org.hibernate.envers.Audited;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.dataBytes.controller.EmployeeController;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,26 +55,27 @@ public class Employee implements Serializable{
 	//@SequenceGenerator(name = "EMPLOYEE_SEQ", sequenceName = "EMPLOYEE_SEQ", allocationSize = 1, initialValue = 1)	
 	private Long id;
 	
-	@Getter @Setter @JsonProperty @Column (name="NAME", nullable = false, length = 100)
+	@Getter @Setter @JsonProperty @NotNull @Column (name="NAME", nullable = false, length = 100)
 	private String name;
 	
-	@Getter @Setter @JsonProperty @Column (name="APPAREA", nullable = false)
+	@Getter @Setter @JsonProperty @NotNull @Column (name="APPAREA", nullable = false)
 	private String appArea;	
 	
-	@Getter @Setter @JsonProperty @Column (name="DSID", nullable = false)
+	@Getter @Setter @JsonProperty @NotNull @Column (name="DSID", nullable = false)
 	private String dsId;
 	
 	@Temporal(TemporalType.DATE)
-	@Getter @Setter @JsonProperty @Column (name="BADGEENDDATE", nullable = false)
+	@DateTimeFormat(pattern="yyyy-MM-dd") @Future
+	@Getter @Setter @JsonProperty @NotNull @Column (name="BADGEENDDATE", nullable = false)
 	private Date badgeEndDate;
 		
-	@Getter @Setter @JsonProperty @Column (name="EMAIL", nullable = false)
+	@Getter @Setter @JsonProperty @NotNull @Column (name="EMAIL", nullable = false)
 	private String email;
 	
-	@Getter @Setter @JsonProperty @Column (name="CUBICLEID", nullable = false)
+	@Getter @Setter @JsonProperty @NotNull @Column (name="CUBICLEID", nullable = false)
 	private String cubicleId;	
 	
-	@Getter @Setter @JsonProperty @Column (name="MANAGERID", nullable = false)
+	@Getter @Setter @JsonProperty @NotNull @Column (name="MANAGERID", nullable = false)
 	private String managerId;
 	
 	@Getter @Setter @JsonProperty @Column (name="REQUESTTYPE")

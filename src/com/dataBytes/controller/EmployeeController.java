@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +24,10 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +61,14 @@ public class EmployeeController {
 
 	private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
+	@Autowired
+	@Qualifier("employeeValidator")
+	private Validator validator;
+
+	@InitBinder
+	private void initBinder(WebDataBinder binder) {
+		binder.setValidator(validator);
+	}
 	/*
 	 * @RequestMapping(value = "/listEmployee", method = RequestMethod.GET)
 	 * public ModelAndView list() { System.out.println("We are in list block");
@@ -147,7 +160,7 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = { "/guest/employee/{id}", "/admin/employee/{id}" }, method = RequestMethod.POST)
-	public ResponseEntity<?> add(@Valid @RequestBody Employee employee, UriComponentsBuilder ucBuilder,
+	public ResponseEntity<?> add(@Validated @RequestBody Employee employee, UriComponentsBuilder ucBuilder,
 			BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
@@ -187,14 +200,12 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = "/admin/employee/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<?> update(@ModelAttribute("employee") Employee employee, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<?> update(@Validated @ModelAttribute("employee") Employee employee, UriComponentsBuilder ucBuilder, BindingResult bindingResult) {
 
-		if (null == employee) {
-
-			String msg = "Can not support request with empty employee object";
+		if (bindingResult.hasErrors()) {
+			String msg = "Input data validation failed";
 			log.info(msg);
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
-
 		} else {
 
 			if (!employeeService.isExist(employee.getId())) {
