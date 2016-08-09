@@ -155,9 +155,11 @@ public class EmployeeController {
 		} else {
 
 			if (employeeService.isExist(employee.getId())) {
+				HttpHeaders headers = new HttpHeaders();
+				headers.setLocation(ucBuilder.path("/admin/employee/"+employee.getId()).buildAndExpand(employee.getId()).toUri());
 				String msg = "A Employee with Id " + employee.getId() + " already exist";
 				log.info(msg);
-				return new ResponseEntity<String>(msg, HttpStatus.CONFLICT);
+				return new ResponseEntity<String>(msg, headers, HttpStatus.CONFLICT);
 			}
 		}
 
@@ -165,7 +167,7 @@ public class EmployeeController {
 			if (employeeService.add(employee)) {
 				mailHandler.sendMail("Employee Add", "Employee Added Successfully");
 				HttpHeaders headers = new HttpHeaders();
-				headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(employee.getId()).toUri());
+				headers.setLocation(ucBuilder.path("/admin/employee/"+employee.getId()).buildAndExpand(employee.getId()).toUri());
 				return new ResponseEntity<Void>(headers,HttpStatus.CREATED);
 			} else {
 				String errorMessage = "Employee Add not happend whle adding to database due to request unfulfillment or internal server issue.";
