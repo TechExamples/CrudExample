@@ -266,6 +266,12 @@ public class EmployeeController {
 			@RequestParam("files") MultipartFile[] files) {
 
 		String msg = null;
+		log.info("multipart filename lenth:"+ files.length);
+		if (files.length == 0) {
+			msg = "Uploaded file array length is zero. Seems files are not uploaded or not with param name 'files'";
+			log.info(msg);
+			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
+		}
 		/*
 		if (files.length != filenames.length) {
 			msg = "Mandatory information missing";
