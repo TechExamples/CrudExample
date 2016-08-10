@@ -7,11 +7,12 @@
 
 	<http auto-config="true" use-expressions="true">
 		<intercept-url pattern="/guest**" access="permitAll" />
+		<!--  
 		<intercept-url pattern="/admin**" access="hasRole('ADMIN')" />
-
+		-->
 		<form-login login-page="/loginPage.do" login-processing-url="/login.do" username-parameter="ssoId" 
 			password-parameter="password" authentication-failure-url="/loginPage.do?error=true"
-			always-use-default-target="true" default-target-url="/admin/AdminDashboard.do" />
+			always-use-default-target="true" default-target-url="/pages/AdminDashboard.jsp" />
 
 		<access-denied-handler ref="accessDeniedHandlerImpl" />
 

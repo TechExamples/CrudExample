@@ -1,21 +1,20 @@
-<ol >
+<ol>
 	<table class="csstable">
 		<tr class="css-tableAdmin">
 
 			<th class="css-table-cellAdmin"><label>Name</label></th>
 			<th class="css-table-cellAdmin"><label>Employee Id</label></th>
-			<th class="css-table-cellAdmin"><label>Employee
-					Email</label></th>
-			<th class="css-table-cellAdmin"><label>Manager
-					Email</label></th>
-					<th class="css-table-cellAdmin"><label>Due Date</label></th>
+			<th class="css-table-cellAdmin"><label>Employee Email</label></th>
+			<th class="css-table-cellAdmin"><label>Manager Email</label></th>
+			<th class="css-table-cellAdmin"><label>Due Date</label></th>
 		</tr>
 	</table>
-<!-- 	<li ng-repeat="employee in employeesList"
+	<!-- 	<li ng-repeat="employee in employeesList"
 		ng-if="employee.ReqStatus == 1"> -->
-			<li ng-repeat="employee in employeesList"><div ng-controller="showCtrl">
-			<div style="padding:5px">
-			<br>
+	<li ng-repeat="employee in employeesList"><div
+			ng-controller="showCtrl">
+			<div style="padding: 5px">
+				<br>
 				<div ng-click="ShowHide()" class="content">
 					<div style="color: blue;">{{employee.name}}</div>
 					<div>{{employee.id}}</div>
@@ -33,6 +32,11 @@
 						type="checkbox" ng-model="employee.exam5">Policy2
 					<textarea ng-model="employee.comment"></textarea>
 					<button ng-click="ShowHide()" ng-hide="IsHidden">submit</button>
+					<input type="file" file-input="files" />
+					<!-- <input ng-hide="true"  type="file" ng-model="filenames" /> -->
+					<button ng-click="upload(employee.id)">upload</button>
+					<li ng-repeat ="file in files">{{file.name}}</li>
+					<a href="">Download</a>
 				</div>
 			</div>
 		</div></li>

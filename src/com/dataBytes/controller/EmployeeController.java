@@ -60,7 +60,7 @@ public class EmployeeController {
 	private MailHandler mailHandler;
 
 	private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
-
+	/*
 	@Autowired
 	@Qualifier("employeeValidator")
 	private Validator validator;
@@ -69,6 +69,7 @@ public class EmployeeController {
 	private void initBinder(WebDataBinder binder) {
 		binder.setValidator(validator);
 	}
+	*/
 	/*
 	 * @RequestMapping(value = "/listEmployee", method = RequestMethod.GET)
 	 * public ModelAndView list() { System.out.println("We are in list block");
@@ -160,8 +161,7 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = { "/guest/employee/{id}", "/admin/employee/{id}" }, method = RequestMethod.POST)
-	public ResponseEntity<?> add(@Validated @RequestBody Employee employee, UriComponentsBuilder ucBuilder,
-			BindingResult bindingResult) {
+	public ResponseEntity<?> add(@RequestBody @Valid Employee employee, BindingResult bindingResult, UriComponentsBuilder ucBuilder) {
 
 		if (bindingResult.hasErrors()) {
 			String msg = "Input data validation failed";
@@ -262,18 +262,21 @@ public class EmployeeController {
 	 */
 	@RequestMapping(value = "/admin/{id}/file", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadMultipleFileHandler(@PathVariable(value = "id") long id,
-			@RequestParam("filenames") String[] filenames, @RequestParam("files") MultipartFile[] files) {
+			//@RequestParam("filenames") String[] filenames, 
+			@RequestParam("files") MultipartFile[] files) {
 
 		String msg = null;
+		/*
 		if (files.length != filenames.length) {
 			msg = "Mandatory information missing";
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
-
+		*/
 		for (int i = 0; i < files.length; i++) {
 			MultipartFile file = files[i];
-			String filename = filenames[i];
-
+			//String filename = filenames[i];
+			String filename = file.getName();
+			log.info("multipart filename:"+ filename);
 			try {
 				// Creating the directory to store file
 				File dir = new File(rootPath + File.separator + id);
@@ -407,4 +410,59 @@ public class EmployeeController {
 		return new ResponseEntity<String>(msg, HttpStatus.ACCEPTED);
 	}
 
+	@RequestMapping(value = "/admin/{id}/excel", method = RequestMethod.GET)
+	public ResponseEntity<?> downloadEmployeeInfoIntoExcel(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable(value = "id") long id) {
+
+		String msg = null;
+		File dir = new File(rootPath + File.separator + id);
+		String filename = "";
+		
+		// Create the file on server
+		File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
+		if (!serverFile.exists()) {
+			msg = "Required File not found";
+			return new ResponseEntity<String>(msg, HttpStatus.NOT_FOUND);
+		}
+
+		try (FileInputStream inputStream = new FileInputStream(serverFile);
+				OutputStream outputStream = response.getOutputStream()) {
+
+			// get MIME type of the file
+			String mimeType = request.getServletContext().getMimeType(serverFile.getAbsolutePath());
+			if (mimeType == null) {
+				// set to binary type if MIME mapping not found
+				mimeType = "application/octet-stream";
+			}
+			log.info("MIME type: " + mimeType);
+
+			// set content attributes for the response
+			response.setContentType(mimeType);
+			response.setContentLength((int) serverFile.length());
+
+			String headerKey = "Content-Disposition";
+			String headerValue = String.format("attachment; filename=\"%s\"", serverFile.getName());
+			response.setHeader(headerKey, headerValue);
+
+			byte[] buffer = new byte[BUFFER_SIZE];
+			int bytesRead = -1;
+
+			// write bytes read from the input stream into the output stream
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, bytesRead);
+			}
+
+			log.info("Server File Location=" + serverFile.getAbsolutePath());
+
+			msg = msg + "You successfully downloaded file=" + serverFile.getName();
+
+		} catch (Exception e) {
+			log.error("Exception occured in while access file upload for emp id " + id
+					+ ". Most likely file permissions issue ", e);
+			msg = e + " <== error";
+			return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		return new ResponseEntity<String>(msg, HttpStatus.ACCEPTED);
+	}
 }
