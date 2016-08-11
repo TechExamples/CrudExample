@@ -30,7 +30,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     public boolean isExist(Long id) {
     	Session session = sessionFactory.getCurrentSession();
 		try {
-			SQLQuery query = session.createSQLQuery("select 1 from Employee where ID=:id");
+			SQLQuery query = session.createSQLQuery("select 1 from Employee where EMPLOYEE_ID=:id");
 			
 			
 			List employeeList =query.setParameter("id", id).list();
@@ -54,11 +54,12 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	}
 	
     @Override 	
-	public void update(Employee item) {
+	public void update(Employee employee) {
 		
 		Session session = sessionFactory.getCurrentSession();
 		try {
-			session.saveOrUpdate(item);
+			log.info("before update to table"+ employee);
+			session.update(employee);
 			} catch (HibernateException e) {
 				e.printStackTrace();
 			}
@@ -83,8 +84,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		List<Employee> employees = null;
 		try {
 			log.debug("calling getByName procedure");
-			Query query = session.createQuery("from Employee where ID=:idOrName "
-					+ "or FIRSTNAME||MIDDLENAME||LASTNAME like '%:name%' ");
+			Query query = session.createQuery("from Employee where EMPLOYEE_ID=:idOrName "
+					+ "or NAME like '%:name%' ");
 			
 			query.setParameter("name", name);
 			if (firstResult != -1) query.setFirstResult(firstResult);  
@@ -105,8 +106,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		try {
 			System.out.println("In getEmployee(String idOrName)");
 			//item = (EmployeeMap) session.get(EmployeeMap.class, id);
-			Query query = session.createQuery("from Employee where ID=:idOrName "
-					+ "or FIRSTNAME||MIDDLENAME||LASTNAME like '%:idOrName%' ");
+			Query query = session.createQuery("from Employee where EMPLOYEE_ID=:idOrName "
+					+ "or NAME like '%:idOrName%' ");
 			
 			query.setParameter("idOrName", idOrName);
 			if (firstResult != -1) query.setFirstResult(firstResult);  

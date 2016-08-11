@@ -41,8 +41,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.dataBytes.dto.Employee;
+import com.dataBytes.dto.Privilege;
 import com.dataBytes.mail.MailHandler;
 import com.dataBytes.service.EmployeeService;
+import com.dataBytes.service.PrivilegeService;
 
 @RestController
 public class EmployeeController {
@@ -55,6 +57,9 @@ public class EmployeeController {
 
 	@Autowired
 	private EmployeeService employeeService;
+	
+	@Autowired
+	private PrivilegeService privilegeService;
 
 	@Autowired
 	private MailHandler mailHandler;
@@ -200,14 +205,14 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value = "/admin/employee/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<?> update(@Validated @ModelAttribute("employee") Employee employee, UriComponentsBuilder ucBuilder, BindingResult bindingResult) {
+	public ResponseEntity<?> update(@RequestBody Employee employee, UriComponentsBuilder ucBuilder, BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
 			String msg = "Input data validation failed";
 			log.info(msg);
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		} else {
-
+			log.info("Employee Object employee"+ employee);
 			if (!employeeService.isExist(employee.getId())) {
 				String msg = "A Employee with Id " + employee.getId() + " does not exist";
 				log.info(msg);
@@ -257,6 +262,25 @@ public class EmployeeController {
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
 
+	@RequestMapping(value = "/admin/privileges", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getPrivilegesJson() {
+
+		List<Privilege> privileges;
+		try {
+			privileges = privilegeService.getAllPrivileges();
+			if (privileges == null || privileges.isEmpty()) {
+				return new ResponseEntity<List<Privilege>>(privileges, HttpStatus.NO_CONTENT);
+			}
+			return new ResponseEntity<List<Privilege>>(privileges, HttpStatus.OK);
+
+		} catch (Exception e) {
+			log.error("Exception occured in privilegeService calling", e);
+			String errorMessage = e + " <== error";
+			return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
 	/**
 	 * Upload multiple file using Spring Controller
 	 */
@@ -281,7 +305,7 @@ public class EmployeeController {
 		for (int i = 0; i < files.length; i++) {
 			MultipartFile file = files[i];
 			//String filename = filenames[i];
-			String filename = file.getName();
+			String filename = file.getOriginalFilename();
 			log.info("multipart filename:"+ filename);
 			try {
 				// Creating the directory to store file

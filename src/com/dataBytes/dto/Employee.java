@@ -81,6 +81,9 @@ public class Employee implements Serializable{
 	@Getter @Setter @JsonProperty @Column (name="REQUESTTYPE")
 	private String requestType;
 	
+	@Getter @Setter @JsonProperty @Column (name="STATUS")
+	private Integer status=0;
+	
 	@Getter @Setter @JsonProperty 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "EMPLOYEE_PRIVILEGE", joinColumns = { @JoinColumn(name = "EMPLOYEE_ID") }, inverseJoinColumns = {
@@ -121,7 +124,7 @@ public class Employee implements Serializable{
 			StringBuffer sb = new StringBuffer();
 			sb.append("  id:"+id+"; Employee Name:"+name+";  App Area:"+appArea+";  DSID:"+dsId);
 			sb.append("; PO / Badge End Date:"+badgeEndDate+";  Email:"+email+";  Cubicle Id:"+cubicleId);
-			sb.append(";  Infy Manager Id:"+managerId+";  Type Of Request:"+requestType);
+			sb.append(";  Infy Manager Id:"+managerId+";  Type Of Request:"+requestType+";status:"+status);
 			log.debug(sb.toString());
 			return sb.toString();
 		} catch(Throwable t) {

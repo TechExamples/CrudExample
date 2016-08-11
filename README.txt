@@ -96,7 +96,7 @@ HSQLDB is both in-memory and file DB. We are using file DB.
 Since it is file DB,Either application or standalone connectivity accepted, not both*/
 
 /*HSQL Standalone readonly connectivity (while application running)*/
-java -cp C:/Users/rnel1941/workspace/CrudExample/test/lib/hsqldb.jar org.hsqldb.util.DatabaseManagerSwing -driver org.hsqldb.jdbcDriver -url jdbc:hsqldb:file:C:/Users/rnel1941/odcAccess_db;shutdown=true;hsqldb.write_delay=false;readonly=true -user sa
+java -cp C:/Users/anusha/git/CrudExample/test/lib/hsqldb.jar org.hsqldb.util.DatabaseManagerSwing -driver org.hsqldb.jdbcDriver -url jdbc:hsqldb:file:db/odcAccess_db;shutdown=true;hsqldb.write_delay=false;readonly=true -user sa
 
 
 /* SPRING Security DB remember-me functionality. It needs database table to get and stored*/

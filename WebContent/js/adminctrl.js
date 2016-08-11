@@ -32,6 +32,13 @@ admin.controller('adminController', [
 					.setDate($scope.FromDate.getDate() + 14);
 			$scope.countOne = 0;
 			$scope.countTwo = 0;
+			
+			$http.get("../admin/privileges.json").then(
+				function(response) {
+					$scope.privileges= response.data;
+				}
+			);
+			
 			$http.get("../admin/employees.json").then(
 					function(response) {
 						console.log("entered into then function");
@@ -73,6 +80,15 @@ admin.controller('adminController', [
 						});
 
 			};
+			$scope.approve = function(id,employee) {
+				employee.status = 1;
+				var approveURL = "../admin/employee/"+id+".json";
+				$http.put(approveURL, employee).then(
+						function(response) {
+							});
+
+			};
+			
 			$scope.upload = function(id) {
 				/*var file = $scope.files;
 				console.log('file is ' );
@@ -83,6 +99,7 @@ admin.controller('adminController', [
 				var fd = new FormData();
 				angular.forEach($scope.files, function(file) {
 					fd.append('files', file)
+					alert("data inserting");
 				})
 				//fd.append('files', file);
 				//fd.append('filenames',filename);
