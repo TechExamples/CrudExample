@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -286,10 +287,11 @@ public class EmployeeController {
 	 */
 	@RequestMapping(value = "/admin/{id}/file", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadMultipleFileHandler(@PathVariable(value = "id") long id,
-			//@RequestParam("filenames") String[] filenames, 
-			@RequestParam("files") MultipartFile[] files) {
+			@RequestParam("files") MultipartFile[] files,
+			UriComponentsBuilder ucBuilder) {
 
 		String msg = null;
+		HttpHeaders headers = new HttpHeaders();
 		log.info("multipart filename lenth:"+ files.length);
 		if (files.length == 0) {
 			msg = "Uploaded file array length is zero. Seems files are not uploaded or not with param name 'files'";
@@ -304,15 +306,14 @@ public class EmployeeController {
 		*/
 		for (int i = 0; i < files.length; i++) {
 			MultipartFile file = files[i];
-			//String filename = filenames[i];
 			String filename = file.getOriginalFilename();
 			log.info("multipart filename:"+ filename);
 			try {
 				// Creating the directory to store file
 				File dir = new File(rootPath + File.separator + id);
+				log.info("Dir path:"+rootPath + File.separator + id);
 				if (!dir.exists())
-					dir.mkdirs();
-
+					FileUtils.forceMkdir(dir);
 				// Create the file on server
 				File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
 
@@ -329,8 +330,10 @@ public class EmployeeController {
 				}
 
 				log.info("Server File Location=" + serverFile.getAbsolutePath());
-				msg = msg + "You successfully uploaded file=" + filename;
-
+				msg = "file=" + filename;
+				
+		        headers.setLocation(ucBuilder.path("/admin/"+id+"/file/"+filename).build().toUri());
+		        
 			} catch (Exception e) {
 				log.error("Exception occured in while access file upload for emp id " + id
 						+ ". Most likely file permissions issue ", e);
@@ -338,7 +341,7 @@ public class EmployeeController {
 				return new ResponseEntity<String>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
-		return new ResponseEntity<String>(msg, HttpStatus.CREATED);
+		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 	}
 
 	/**

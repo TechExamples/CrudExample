@@ -25,21 +25,26 @@
 				<br>
 				<div ng-hide="IsHidden" style="background-color: white;">
 					<p>please check employee compliances</p>
-					<div ng-repeat= "privilege in privileges">
-						<input type="checkbox">{{privilege.name}}</div><textarea ng-model="employee.comment"></textarea>
+					<div ng-repeat="privilege in privileges">
+						<input type="checkbox">{{privilege.name}}
+					</div>
+					<textarea ng-model="employee.comment"></textarea>
 					<button ng-click="ShowHide()" ng-hide="IsHidden">submit</button>
-						<!-- <input type="checkbox" ng-model="employee.privileges.exam1">Test1 <input
+					<!-- <input type="checkbox" ng-model="employee.privileges.exam1">Test1 <input
 						type="checkbox" ng-model="employee.privileges.exam2">Test2 <input
 						type="checkbox" ng-model="employee.exam3">Test3 <input
 						type="checkbox" ng-model="employee.exam4">Policy1 <input
 						type="checkbox" ng-model="employee.exam5">Policy2
-					
+					 -->
 					<button ng-click="compliancesSubmit(employee.id,employee)">submit</button>
-					<input type="file" file-model="files" />
+					<!-- <input type="file" file-model="files" />
 					<input ng-hide="true"  type="file" ng-model="filenames" />
-					<button ng-click="upload(employee.id)">upload</button>
+					<button ng-click="uploadFile()">upload</button>
 					<li ng-repeat ="file in files">{{file.name}}</li>
 					<a href="">Download</a> -->
+					<input type="file" file-model="myFile" /> <input type="text"
+						ng-model="test1" value="abc" />
+					<button ng-click="uploadFile()">upload me</button>
 				</div>
-			</div></li>
-</ol>
+			</div>
+		</div>

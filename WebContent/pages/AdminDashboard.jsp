@@ -85,9 +85,9 @@
 		</script>
 
 		<script type="text/ng-template" id="two.tpl.html">
-		<div id="viewTwo">
+		<div id="viewTwo" >
 		
-			<div ng-include="'incompleteCompliancesTemplate.html'"></div>
+			<div ng-include="'incompleteCompliancesTemplate.html'" ></div>
                  
         
 </div>
