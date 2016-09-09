@@ -29,7 +29,10 @@ INSERT INTO EMPLOYEE(EMPLOYEE_ID, NAME,MANAGERID,DSID,APPAREA, BADGEENDDATE, CUB
 VALUES (1002,'123', 'anu123','dsi21','apparea2', '2016-08-04','12','123@infosys.com','requesttype2',0,false,'2016-08-01','system');
 
 
-insert into privilege 
+insert into privilege (privilege_id, name) values('1001','Exam 1');
+insert into privilege (privilege_id, name) values('1002','Exam 2');
+insert into privilege (privilege_id, name) values('1003','Exam 3');
+
 insert into employee_privilege(employee_id,employee_privilege_id) values(1002,1001);
 
 commit;

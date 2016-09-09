@@ -80,6 +80,13 @@ admin.controller('adminController', [
 						});
 
 			};
+			
+			$scope.downloadToExcel=  function() {
+				$http.get("../admin/1001/excel.json").then(
+						function(response) {
+						});
+
+			};
 			$scope.approve = function(id,employee) {
 				employee.status = 1;
 				var approveURL = "../admin/employee/"+id+".json";
@@ -119,20 +126,55 @@ admin.controller('adminController', [
 			};
 
 		} ]);
-admin.controller('showCtrl', function($scope,fileUpload) {
+admin.controller('showCtrl', function($scope,$http) {
 	$scope.IsHidden = true;
+	
+	
 	$scope.ShowHide = function() {
 		//If DIV is hidden it will be visible and vice versa.
 		$scope.IsHidden = $scope.IsHidden ? false : true;
 	};
 	 $scope.uploadFile = function(){
 	       var file = $scope.myFile;
-	       console.log('test is '+$scope.test1);
-	       console.log('file is ' +file);
 	       console.dir(file);
 	       var uploadUrl = '../admin/1001/file.json';
-	       fileUpload.uploadFileToUrl(file, uploadUrl);
+	       var fd = new FormData();
+	       fd.append('files', file);
+	       $http.post(uploadUrl, fd, {
+	           transformRequest: angular.identity,
+	           headers: {'Content-Type': undefined,
+	 				enctype:'multipart/form-data'}
+	        })
+	     
+	        .success(function(data, status, headers, config){
+	     	   var location = headers('Location');
+	     	  $scope.filename = location;
+	        })
+	     
+	        .error(function(){
+	        });
+	       //fileUpload.uploadFileToUrl(file, uploadUrl);
+	       
 	    };
+	    $scope.compliancesSubmit = function(id,employee){
+			$scope.ShowHide();
+			var approveURL = "../admin/employee/"+id+".json";
+			//http://stackoverflow.com/questions/14514461/how-to-bind-to-list-of-checkbox-values-with-angularjs
+			$scope.selectedPrivileges = function selectedPrivileges() {
+			    return filterFilter($scope.privileges, { selected: true });
+			  };
+			  
+			$http.put(approveURL,employee).then(
+					function(response) {
+					}
+				);
+		};
+		$scope.addStausId = function(privilegeId){
+			console.log(employee.privileges);
+			$scope.employee.privileges.push(privilegeId);
+			console.log(employee.privileges);
+			
+		};
 	
 });
 
@@ -197,7 +239,8 @@ admin.service('fileUpload', ['$http', function ($http) {
 				enctype:'multipart/form-data'}
        })
     
-       .success(function(){
+       .success(function(data, status, headers, config){
+    	   var location = headers('Location');
        })
     
        .error(function(){

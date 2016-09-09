@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.dataBytes.dto.Employee;
@@ -289,21 +290,17 @@ public class EmployeeController {
 	public ResponseEntity<?> uploadMultipleFileHandler(@PathVariable(value = "id") long id,
 			@RequestParam("files") MultipartFile[] files,
 			UriComponentsBuilder ucBuilder) {
-
+		
 		String msg = null;
 		HttpHeaders headers = new HttpHeaders();
+		String url	= "";
 		log.info("multipart filename lenth:"+ files.length);
 		if (files.length == 0) {
 			msg = "Uploaded file array length is zero. Seems files are not uploaded or not with param name 'files'";
 			log.info(msg);
 			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
 		}
-		/*
-		if (files.length != filenames.length) {
-			msg = "Mandatory information missing";
-			return new ResponseEntity<String>(msg, HttpStatus.BAD_REQUEST);
-		}
-		*/
+
 		for (int i = 0; i < files.length; i++) {
 			MultipartFile file = files[i];
 			String filename = file.getOriginalFilename();
@@ -311,7 +308,7 @@ public class EmployeeController {
 			try {
 				// Creating the directory to store file
 				File dir = new File(rootPath + File.separator + id);
-				log.info("Dir path:"+rootPath + File.separator + id);
+				log.info("Dir path:"+dir.getAbsolutePath());
 				if (!dir.exists())
 					FileUtils.forceMkdir(dir);
 				// Create the file on server
@@ -331,8 +328,9 @@ public class EmployeeController {
 
 				log.info("Server File Location=" + serverFile.getAbsolutePath());
 				msg = "file=" + filename;
-				
-		        headers.setLocation(ucBuilder.path("/admin/"+id+"/file/"+filename).build().toUri());
+				String tempUrl = ServletUriComponentsBuilder.fromCurrentServletMapping().path("/admin/"+id+"/file/"+filename+".json").build().toUriString();
+				url = url.equals("") ? tempUrl: url + "," + tempUrl; 
+				log.info("URI:"+url);
 		        
 			} catch (Exception e) {
 				log.error("Exception occured in while access file upload for emp id " + id
@@ -341,6 +339,7 @@ public class EmployeeController {
 				return new ResponseEntity<String>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
+		headers.set("Location", url);
 		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 	}
 
@@ -359,13 +358,15 @@ public class EmployeeController {
 	public ResponseEntity<?> downloadFile(HttpServletRequest request, HttpServletResponse response,
 			@PathVariable(value = "id") long id, @PathVariable(value = "filename") String filename) {
 
+		log.info("Calling downloadFile"+ id +", filename:"+filename);
 		String msg = null;
 		File dir = new File(rootPath + File.separator + id);
 
 		// Create the file on server
 		File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
 		if (!serverFile.exists()) {
-			msg = "Required File not found";
+			log.info("Required file "+serverFile.getAbsolutePath()+" does not exist");
+			msg = "Required file "+filename+" not found";
 			return new ResponseEntity<String>(msg, HttpStatus.NOT_FOUND);
 		}
 

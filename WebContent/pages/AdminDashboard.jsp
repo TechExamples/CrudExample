@@ -38,7 +38,7 @@
 			<div id="searchNdHome">
 				<input type="search" ng-model="search" placeholder="search"
 					ng-click=adminSearch()> <span>|</span>
-				<button>Export to Excel</button>
+				<button ng-click="downloadToExcel()">Export to Excel</button>
 				<span>|</span> <a href="#main" style="color: white">Home</a>
 			</div>
 			<div id="tabs" class="dashboard-container" ng-hide="search">
