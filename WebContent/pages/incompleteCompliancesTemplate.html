@@ -25,15 +25,41 @@
 				<br>
 				<div ng-hide="IsHidden" style="background-color: white;">
 					<p>please check employee compliances</p>
-					<div ng-repeat="privilege in privileges" ng-init="employee.privileges = {id: privilege.id}">
-<!-- 					<span  ng-model="privilege1">{{privilege.id}}</span>
- -->						<input type="checkbox" name="selectedPrivileges[]" ng-model="privilege.selected"  value="{{privilege.id}}">{{privilege.name}}<br>
+					<!-- <div ng-repeat="privilege in privileges" ng-init="employee.privileges = {id: privilege.id}">
+					<span  ng-model="privilege1">{{privilege.id}}</span>
+						<input type="checkbox" name="selectedPrivileges[]" ng-model="privilege.selected"  value="{{privilege.id}}">{{privilege.name}}<br>
 					</div>
 					<textarea ng-model="employee.comment"></textarea>
 					<button ng-click="compliancesSubmit(employee.id,semployee)" ng-hide="IsHidden">submit</button>
 					<input type="file" file-model="myFile" /> 
 					<a ng-href={{filename}} > {{myFile.name}}</a>
 					<button ng-click="uploadFile()">upload me</button>
+					 -->
+
+
+
+
+
+					<div ng-repeat="privilege in privileges">
+						<div ng-controller="showPrivilegeCtrl">
+						<input type="checkbox" name="selectedPrivileges[]"
+								ng-model="checked[]" value="{{privilege.id}}" 
+								ng-change="updateArray(employee.privileges,'privilegeId',privilege.id, {{$index}})" 
+								ng-checked="valueExistsinArray(employee.privileges,'privilegeId',privilege.id)">{{privilege.name}}<br>
+						</div>
+					</div>
+					<textarea ng-model="employee.comment"></textarea>
+					<button ng-click="compliancesSubmit(employee.id,employee)"
+						ng-hide="IsHidden">submit</button>
+					<input type="file" file-model="myFile" /> <a ng-href={{filename}}>
+						{{myFile.name}}</a>
+					<button ng-click="uploadFile()">upload me</button>
+
+
+
+
+
+
 				</div>
 			</div>
 		</div>

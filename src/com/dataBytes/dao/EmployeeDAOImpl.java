@@ -59,7 +59,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		Session session = sessionFactory.getCurrentSession();
 		try {
 			log.info("before update to table"+ employee);
-			session.update(employee);
+			session.merge(employee);
 			} catch (HibernateException e) {
 				e.printStackTrace();
 			}

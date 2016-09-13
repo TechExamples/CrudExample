@@ -5,7 +5,7 @@
         <PatternLayout pattern="current date-%d LEVEL-%-5p  Thread-[%t]  Method-%M()   Class name-%C   Message-%m%n"/>
     </Console>
     
-    <RollingFile name="RollingFile" fileName="C:/Users/rnel1941/workspace/logs/odcAccess.log" filePattern="C:/Users/rnel1941/workspace/logs/odcAccess-%d{MM-dd-yyyy}.log.gz">
+    <RollingFile name="RollingFile" fileName="logs/odcAccess.log" filePattern="logs/odcAccess-%d{MM-dd-yyyy}.log.gz">
       <PatternLayout>
         <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
       </PatternLayout>

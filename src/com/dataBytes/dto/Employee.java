@@ -84,11 +84,16 @@ public class Employee implements Serializable{
 	@Getter @Setter @JsonProperty @Column (name="STATUS")
 	private Integer status=0;
 	
-	@Getter @Setter @JsonProperty 
-	@ManyToMany(fetch = FetchType.EAGER)
+	
+	/*@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "EMPLOYEE_PRIVILEGE", joinColumns = { @JoinColumn(name = "EMPLOYEE_ID") }, inverseJoinColumns = {
 			@JoinColumn(name = "EMPLOYEE_PRIVILEGE_ID") })
 	private Set<Privilege> privileges = new HashSet<Privilege>();
+	*/
+	@Getter @Setter @JsonProperty 
+	@OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+	@JoinColumn(name="EMPLOYEE_ID", referencedColumnName="EMPLOYEE_ID")
+	private Set<EmployeePrivilege> privileges = new HashSet<EmployeePrivilege>();
 	
 	@Getter @Setter @JsonIgnore @Column (name="DELETEFLAG")
 	private Boolean deleteFlag;
@@ -125,6 +130,7 @@ public class Employee implements Serializable{
 			sb.append("  id:"+id+"; Employee Name:"+name+";  App Area:"+appArea+";  DSID:"+dsId);
 			sb.append("; PO / Badge End Date:"+badgeEndDate+";  Email:"+email+";  Cubicle Id:"+cubicleId);
 			sb.append(";  Infy Manager Id:"+managerId+";  Type Of Request:"+requestType+";status:"+status);
+			sb.append("; privileges:"+privileges);
 			log.debug(sb.toString());
 			return sb.toString();
 		} catch(Throwable t) {

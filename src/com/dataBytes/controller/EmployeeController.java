@@ -6,13 +6,27 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.DateFormatConverter;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +57,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.dataBytes.dto.Employee;
+import com.dataBytes.dto.EmployeePrivilege;
 import com.dataBytes.dto.Privilege;
 import com.dataBytes.mail.MailHandler;
 import com.dataBytes.service.EmployeeService;
 import com.dataBytes.service.PrivilegeService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class EmployeeController {
@@ -209,6 +225,12 @@ public class EmployeeController {
 	@RequestMapping(value = "/admin/employee/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<?> update(@RequestBody Employee employee, UriComponentsBuilder ucBuilder, BindingResult bindingResult) {
 
+		Set<EmployeePrivilege> employeePrivileges =  employee.getPrivileges();
+		for (EmployeePrivilege employeePrivilege: employeePrivileges) {
+			employeePrivilege.setEmployeeId(employee.getId());
+		}
+		
+		System.out.print("employee:"+employee);
 		if (bindingResult.hasErrors()) {
 			String msg = "Input data validation failed";
 			log.info(msg);
@@ -444,59 +466,106 @@ public class EmployeeController {
 		return new ResponseEntity<String>(msg, HttpStatus.ACCEPTED);
 	}
 
-	@RequestMapping(value = "/admin/{id}/excel", method = RequestMethod.GET)
-	public ResponseEntity<?> downloadEmployeeInfoIntoExcel(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable(value = "id") long id) {
+	@RequestMapping(value = "/admin/excel", method = RequestMethod.GET)
+	public ResponseEntity<?> downloadEmployeeInfoIntoExcel(HttpServletRequest request, HttpServletResponse response) {
 
 		String msg = null;
-		File dir = new File(rootPath + File.separator + id);
-		String filename = "";
+		List<Employee> employees;
 		
-		// Create the file on server
-		File serverFile = new File(dir.getAbsolutePath() + File.separator + filename);
-		if (!serverFile.exists()) {
-			msg = "Required File not found";
-			return new ResponseEntity<String>(msg, HttpStatus.NOT_FOUND);
-		}
+		try (OutputStream outputStream = response.getOutputStream()){
+			employees = employeeService.findAllEmployees();
+			//System.out.println("Map:"+map);
+			
+			List<String> columnNames = new ArrayList<String>();
+			columnNames.add("id");
+			columnNames.add("name");
+			columnNames.add("appArea");
+			columnNames.add("dsId");
+			columnNames.add("badgeEndDate");
+			columnNames.add("email");
+			columnNames.add("cubicleId");
+			columnNames.add("managerId");
+			columnNames.add("requestType");
+			columnNames.add("status");
+			columnNames.add("privileges");
+			
+			//Get the workbook instance for XLS file 
+			XSSFWorkbook workbook = new XSSFWorkbook ();
 
-		try (FileInputStream inputStream = new FileInputStream(serverFile);
-				OutputStream outputStream = response.getOutputStream()) {
+			//Get first sheet from the workbook
+			XSSFSheet sheet = workbook.createSheet("Employee_Details");
 
-			// get MIME type of the file
-			String mimeType = request.getServletContext().getMimeType(serverFile.getAbsolutePath());
-			if (mimeType == null) {
-				// set to binary type if MIME mapping not found
-				mimeType = "application/octet-stream";
+			//Create a new row in current sheet
+			Row row = sheet.createRow(0);
+			
+			//Create a new cell in current row
+			int i = 0;
+			Cell cell = null;
+			for(String columnName : columnNames) {
+				cell = row.createCell(i++);
+				cell.setCellValue(columnName);
 			}
-			log.info("MIME type: " + mimeType);
-
-			// set content attributes for the response
-			response.setContentType(mimeType);
-			response.setContentLength((int) serverFile.length());
-
+			
+			int rowNum = 1;
+			for (Employee employee : employees){
+				row = sheet.createRow(rowNum++);
+				
+				int colNum = 0;
+				for(String columnName : columnNames) {
+					cell = row.createCell(colNum++);
+	
+					String methodName = "get"+columnName.substring(0, 1).toUpperCase() + columnName.substring(1);
+					Method method = employee.getClass().getDeclaredMethod(methodName);
+					Object obj = method.invoke(employee);
+					
+					if (obj instanceof Number) {
+						cell.setCellValue(((Number)obj).doubleValue());
+					} else if (obj instanceof Date) {
+						
+						String excelFormatPattern = DateFormatConverter.convert(Locale.ENGLISH, "dd-MMM-yyyy");
+						CellStyle cellStyle = workbook.createCellStyle();
+						DataFormat poiFormat = workbook.createDataFormat();
+					    cellStyle.setDataFormat(poiFormat.getFormat(excelFormatPattern));
+					      
+						cell.setCellValue((Date)obj);
+						cell.setCellStyle(cellStyle);
+					} else if (obj instanceof Object[]) {
+						String objString = "";
+						for(Object arrObj : (Object[])obj) {
+							objString = objString + arrObj.toString()+",";
+							
+						}
+						cell.setCellValue(objString);
+					} else if (obj instanceof Collection) {
+						String objString = "";
+						for(Object arrObj : (Collection)obj) {
+							objString = objString + arrObj.toString()+",";
+						}
+						cell.setCellValue(objString);
+					} else {
+						cell.setCellValue(obj.toString());
+					}
+				}
+			}
+			
+			String mimeType = "application/vnd.ms-excel";;
 			String headerKey = "Content-Disposition";
-			String headerValue = String.format("attachment; filename=\"%s\"", serverFile.getName());
+			String headerValue = String.format("attachment; filename=\"%s\"", "Employee.xlsx");
 			response.setHeader(headerKey, headerValue);
 
-			byte[] buffer = new byte[BUFFER_SIZE];
-			int bytesRead = -1;
+			// set content attributes for the response
+			response.setContentType(mimeType);			
+			workbook.write(outputStream);
 
-			// write bytes read from the input stream into the output stream
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, bytesRead);
-			}
-
-			log.info("Server File Location=" + serverFile.getAbsolutePath());
-
-			msg = msg + "You successfully downloaded file=" + serverFile.getName();
-
+			msg = msg + "You successfully downloaded file" ;
 		} catch (Exception e) {
-			log.error("Exception occured in while access file upload for emp id " + id
+			log.error("Exception occured in while access file upload for emp id " 
 					+ ". Most likely file permissions issue ", e);
 			msg = e + " <== error";
 			return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
+		
 		return new ResponseEntity<String>(msg, HttpStatus.ACCEPTED);
 	}
 }

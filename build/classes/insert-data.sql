@@ -22,12 +22,18 @@ INSERT INTO APP_USER_USER_PROFILE (user_id, user_profile_id)
   where user.sso_id='srikanth' and profile.type='ADMIN';
  
 /* Populate EMPLOYEE Table */
-INSERT INTO EMPLOYEE(EMPLOYEE_ID, NAME,MANAGERID,DSID,APPAREA, BADGEENDDATE, CUBICLEID, EMAIL, REQUESTTYPE,DELETEFLAG,LASTMODIFIED,LASTMODIFIEDBY)
-VALUES (1001,'abc', 'sri123','dsid1','apparea1', '2016-08-05','11','abc@infosys.com','requesttype1',false,'2016-08-02','system');
+INSERT INTO EMPLOYEE(EMPLOYEE_ID, NAME,MANAGERID,DSID,APPAREA, BADGEENDDATE, CUBICLEID, EMAIL, REQUESTTYPE,STATUS,DELETEFLAG,LASTMODIFIED,LASTMODIFIEDBY)
+VALUES (1001,'abc', 'sri123','dsid1','apparea1', '2016-08-05','11','abc@infosys.com','requesttype1',0,false,'2016-08-02','system');
     
-INSERT INTO EMPLOYEE(EMPLOYEE_ID, NAME,MANAGERID,DSID,APPAREA, BADGEENDDATE, CUBICLEID, EMAIL, REQUESTTYPE,DELETEFLAG,LASTMODIFIED,LASTMODIFIEDBY)
-VALUES (1002,'123', 'anu123','dsi21','apparea2', '2016-08-04','12','123@infosys.com','requesttype2',false,'2016-08-01','system');
+INSERT INTO EMPLOYEE(EMPLOYEE_ID, NAME,MANAGERID,DSID,APPAREA, BADGEENDDATE, CUBICLEID, EMAIL, REQUESTTYPE,STATUS,DELETEFLAG,LASTMODIFIED,LASTMODIFIEDBY)
+VALUES (1002,'123', 'anu123','dsi21','apparea2', '2016-08-04','12','123@infosys.com','requesttype2',0,false,'2016-08-01','system');
 
+
+insert into privilege (privilege_id, name) values('1001','Exam 1');
+insert into privilege (privilege_id, name) values('1002','Exam 2');
+insert into privilege (privilege_id, name) values('1003','Exam 3');
+
+insert into employee_privilege(employee_id,employee_privilege_id) values(1002,1001);
 
 commit;
 
