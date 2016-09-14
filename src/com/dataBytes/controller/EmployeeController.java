@@ -230,7 +230,7 @@ public class EmployeeController {
 			employeePrivilege.setEmployeeId(employee.getId());
 		}
 		
-		System.out.print("employee:"+employee);
+		log.info("employee:"+employee);
 		if (bindingResult.hasErrors()) {
 			String msg = "Input data validation failed";
 			log.info(msg);

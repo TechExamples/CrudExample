@@ -167,10 +167,10 @@ admin.controller('showPrivilegeCtrl', function($scope, $http, genUtils) {
 		return genUtils.deleteValuefromArray(array, key, value);
 	};
 	
-	$scope.checked = [];
+	$scope.checked = {};
 	$scope.updateArray = function(array, key, value, index) {
-		console.log("update array:"+JSON.stringify(array)+",key:"+key+",value:"+value+",index:"+index);
-		if ($scope.checked[index]) {
+		console.log("update array:"+JSON.stringify(array)+",checked:"+JSON.stringify($scope.checked)+",key:"+key+",value:"+value+",index:"+index);
+		if ($scope.checked[value]) {
 			console.log("in checked true");
 			genUtils.addValueInArray(array, key, value);
 		} else {
@@ -257,6 +257,7 @@ admin.service('genUtils', ['$filter',function($filter) {
 	    	 var obj = {};
 	    	 obj[key] = value;
 	    	 var index = array.indexOf(obj);
+	    	 console.log("index:"+index);
 	    	 array.splice(index, 1);
 	    	 console.log('array:'+JSON.stringify(array));
 	    	 return true;

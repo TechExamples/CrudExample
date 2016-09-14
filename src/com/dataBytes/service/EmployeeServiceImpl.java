@@ -146,6 +146,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 				Set<String> files = employee.getFiles();
 				if (files == null) {
 					files = new HashSet<String>();
+					employee.setFiles(files);
 				}
 				Iterator<File> list = FileUtils.iterateFiles(dir, null, false);
 

@@ -57,8 +57,8 @@ public class EmployeePrivilege {
 	public String toString(){
 		try { 
 			StringBuffer sb = new StringBuffer();
-			//sb.append("id:"+id+";employeeId:"+employeeId+";privilegeId:"+privilegeId);
-			sb.append(privilegeId);
+			sb.append("id:"+id+";employeeId:"+employeeId+";privilegeId:"+privilegeId);
+			//sb.append(privilegeId);
 			log.debug(sb.toString());
 			return sb.toString();
 		} catch(Throwable t) {

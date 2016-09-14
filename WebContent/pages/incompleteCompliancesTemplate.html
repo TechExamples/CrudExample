@@ -39,11 +39,11 @@
 
 
 
-
-					<div ng-repeat="privilege in privileges">
-						<div ng-controller="showPrivilegeCtrl">
+					<div ng-controller="showPrivilegeCtrl">
+						<div ng-repeat="privilege in privileges">
+						
 						<input type="checkbox" name="selectedPrivileges[]"
-								ng-model="checked[]" value="{{privilege.id}}" 
+								ng-model="checked[privilege.id]" value="{{privilege.id}}" 
 								ng-change="updateArray(employee.privileges,'privilegeId',privilege.id, {{$index}})" 
 								ng-checked="valueExistsinArray(employee.privileges,'privilegeId',privilege.id)">{{privilege.name}}<br>
 						</div>
